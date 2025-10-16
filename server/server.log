@@ -1,0 +1,33 @@
+
+> server@1.0.0 dev
+> ts-node-dev --respawn --transpile-only src/index.ts
+
+[INFO] 03:37:53 ts-node-dev ver. 2.0.0 (using ts-node ver. 10.9.2, typescript ver. 5.9.2)
+Compilation error in /home/imran/Documents/software/hatgpt-ultra/server/src/index.ts
+Error: Must use import to load ES Module: /home/imran/Documents/software/hatgpt-ultra/server/src/index.ts
+    at Object.<anonymous> (/home/imran/Documents/software/hatgpt-ultra/server/src/index.ts:1:7)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1562:14)
+    at Module._compile (/home/imran/Documents/software/hatgpt-ultra/server/node_modules/source-map-support/source-map-support.js:568:25)
+    at Module.m._compile (/tmp/ts-node-dev-hook-6664832884638314.js:69:33)
+    at node:internal/modules/cjs/loader:1699:10
+    at require.extensions..jsx.require.extensions..js (/tmp/ts-node-dev-hook-6664832884638314.js:114:20)
+    at require.extensions.<computed> (/tmp/ts-node-dev-hook-6664832884638314.js:71:20)
+    at Object.nodeDevHook [as .ts] (/home/imran/Documents/software/hatgpt-ultra/server/node_modules/ts-node-dev/lib/hook.js:63:13)
+    at Module.load (node:internal/modules/cjs/loader:1313:32)
+    at Function._load (node:internal/modules/cjs/loader:1123:12)
+[ERROR] 03:37:54 Error: Must use import to load ES Module: /home/imran/Documents/software/hatgpt-ultra/server/src/index.ts
+[INFO] 03:38:12 Reinitializing TS compilation
+[INFO] 03:38:12 Restarting: /home/imran/Documents/software/hatgpt-ultra/server/tsconfig.json has been modified
+Compilation error in /home/imran/Documents/software/hatgpt-ultra/server/src/index.ts
+Error: Must use import to load ES Module: /home/imran/Documents/software/hatgpt-ultra/server/src/index.ts
+    at Object.<anonymous> (/home/imran/Documents/software/hatgpt-ultra/server/src/index.ts:1:7)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1562:14)
+    at Module._compile (/home/imran/Documents/software/hatgpt-ultra/server/node_modules/source-map-support/source-map-support.js:568:25)
+    at Module.m._compile (/tmp/ts-node-dev-hook-6664832884638314.js:69:33)
+    at node:internal/modules/cjs/loader:1699:10
+    at require.extensions..jsx.require.extensions..js (/tmp/ts-node-dev-hook-6664832884638314.js:114:20)
+    at require.extensions.<computed> (/tmp/ts-node-dev-hook-6664832884638314.js:71:20)
+    at Object.nodeDevHook [as .ts] (/home/imran/Documents/software/hatgpt-ultra/server/node_modules/ts-node-dev/lib/hook.js:63:13)
+    at Module.load (node:internal/modules/cjs/loader:1313:32)
+    at Function._load (node:internal/modules/cjs/loader:1123:12)
+[ERROR] 03:38:12 Error: Must use import to load ES Module: /home/imran/Documents/software/hatgpt-ultra/server/src/index.ts
