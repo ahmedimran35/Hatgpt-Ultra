@@ -1,10 +1,15 @@
-import { Router } from 'express';
-import { z } from 'zod';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import User, {} from '../models/User';
-import { requireAuth } from '../middleware/requireAuth';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const zod_1 = require("zod");
+const bcrypt_1 = __importDefault(require("bcrypt"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const User_1 = __importDefault(require("../models/User"));
+const requireAuth_1 = require("../middleware/requireAuth");
+const router = (0, express_1.Router)();
 // Minimal disposable/temporary email provider blocklist
 const DISPOSABLE_DOMAINS = new Set([
     '10minutemail.com',
@@ -19,36 +24,36 @@ const DISPOSABLE_DOMAINS = new Set([
     'sharklasers.com',
     'dispostable.com',
 ]);
-const credentialsSchema = z.object({
-    email: z.string().email(),
-    password: z.string().min(6),
+const credentialsSchema = zod_1.z.object({
+    email: zod_1.z.string().email(),
+    password: zod_1.z.string().min(6),
 });
-const signupSchema = z.object({
-    email: z.string().email(),
-    username: z.string().min(3).max(20),
-    password: z.string().min(6),
-    confirmPassword: z.string().min(6),
+const signupSchema = zod_1.z.object({
+    email: zod_1.z.string().email(),
+    username: zod_1.z.string().min(3).max(20),
+    password: zod_1.z.string().min(6),
+    confirmPassword: zod_1.z.string().min(6),
 }).refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
 });
-const updateProfileSchema = z.object({
-    email: z.string().email().optional(),
-    username: z.string().min(3).max(20).optional(),
+const updateProfileSchema = zod_1.z.object({
+    email: zod_1.z.string().email().optional(),
+    username: zod_1.z.string().min(3).max(20).optional(),
 });
-const saveChatSchema = z.object({
-    title: z.string().min(1).max(100),
-    messages: z.array(z.object({
-        role: z.enum(['user', 'assistant']),
-        content: z.string(),
-        model: z.string().optional(),
-        type: z.enum(['text', 'image', 'audio']).optional(),
-        imageUrl: z.string().optional(),
-        audioUrl: z.string().optional(),
+const saveChatSchema = zod_1.z.object({
+    title: zod_1.z.string().min(1).max(100),
+    messages: zod_1.z.array(zod_1.z.object({
+        role: zod_1.z.enum(['user', 'assistant']),
+        content: zod_1.z.string(),
+        model: zod_1.z.string().optional(),
+        type: zod_1.z.enum(['text', 'image', 'audio']).optional(),
+        imageUrl: zod_1.z.string().optional(),
+        audioUrl: zod_1.z.string().optional(),
     })),
-    mode: z.enum(['single', 'compare', 'smart']),
-    generationType: z.enum(['text', 'image', 'audio']),
-    models: z.array(z.string()).optional(),
+    mode: zod_1.z.enum(['single', 'compare', 'smart']),
+    generationType: zod_1.z.enum(['text', 'image', 'audio']),
+    models: zod_1.z.array(zod_1.z.string()).optional(),
 });
 router.post('/signup', async (req, res) => {
     try {
@@ -66,17 +71,17 @@ router.post('/signup', async (req, res) => {
             return res.status(400).json({ error: 'Disposable or temporary email addresses are not allowed' });
         }
         // Check if email or username already exists
-        const existingEmail = await User.findOne({ email });
+        const existingEmail = await User_1.default.findOne({ email });
         if (existingEmail) {
             return res.status(409).json({ error: 'Email already exists' });
         }
-        const existingUsername = await User.findOne({ username });
+        const existingUsername = await User_1.default.findOne({ username });
         if (existingUsername) {
             return res.status(409).json({ error: 'Username already exists' });
         }
-        const passwordHash = await bcrypt.hash(password, 12);
-        const user = await User.create({ email, username, passwordHash });
-        const token = jwt.sign({ userId: user._id.toString() }, process.env.JWT_SECRET || 'dev_secret_change_me', { expiresIn: process.env.JWT_EXPIRES_IN || '7d' });
+        const passwordHash = await bcrypt_1.default.hash(password, 12);
+        const user = await User_1.default.create({ email, username, passwordHash });
+        const token = jsonwebtoken_1.default.sign({ userId: user._id.toString() }, process.env.JWT_SECRET || 'dev_secret_change_me', { expiresIn: process.env.JWT_EXPIRES_IN || '7d' });
         return res.json({
             token,
             user: {
@@ -99,15 +104,15 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ error: 'Invalid input' });
         }
         const { email, password } = parsed.data;
-        const user = await User.findOne({ email });
+        const user = await User_1.default.findOne({ email });
         if (!user) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
-        const ok = await bcrypt.compare(password, user.passwordHash);
+        const ok = await bcrypt_1.default.compare(password, user.passwordHash);
         if (!ok) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
-        const token = jwt.sign({ userId: user._id.toString() }, process.env.JWT_SECRET || 'dev_secret_change_me', { expiresIn: process.env.JWT_EXPIRES_IN || '7d' });
+        const token = jsonwebtoken_1.default.sign({ userId: user._id.toString() }, process.env.JWT_SECRET || 'dev_secret_change_me', { expiresIn: process.env.JWT_EXPIRES_IN || '7d' });
         return res.json({
             token,
             user: {
@@ -124,9 +129,9 @@ router.post('/login', async (req, res) => {
     }
 });
 // Get user profile
-router.get('/profile', requireAuth, async (req, res) => {
+router.get('/profile', requireAuth_1.requireAuth, async (req, res) => {
     try {
-        const user = await User.findById(req.userId);
+        const user = await User_1.default.findById(req.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -154,13 +159,13 @@ router.get('/profile', requireAuth, async (req, res) => {
     }
 });
 // Update tokens (called when user sends messages)
-router.post('/update-tokens', requireAuth, async (req, res) => {
+router.post('/update-tokens', requireAuth_1.requireAuth, async (req, res) => {
     try {
         const { tokens } = req.body;
         if (typeof tokens !== 'number' || tokens < 0) {
             return res.status(400).json({ error: 'Invalid token count' });
         }
-        const user = await User.findById(req.userId);
+        const user = await User_1.default.findById(req.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -186,7 +191,7 @@ router.post('/update-tokens', requireAuth, async (req, res) => {
     }
 });
 // Change password
-router.post('/change-password', requireAuth, async (req, res) => {
+router.post('/change-password', requireAuth_1.requireAuth, async (req, res) => {
     try {
         const { currentPassword, newPassword } = req.body;
         if (!currentPassword || !newPassword) {
@@ -195,15 +200,15 @@ router.post('/change-password', requireAuth, async (req, res) => {
         if (newPassword.length < 6) {
             return res.status(400).json({ error: 'New password must be at least 6 characters' });
         }
-        const user = await User.findById(req.userId);
+        const user = await User_1.default.findById(req.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
-        const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.passwordHash);
+        const isCurrentPasswordValid = await bcrypt_1.default.compare(currentPassword, user.passwordHash);
         if (!isCurrentPasswordValid) {
             return res.status(401).json({ error: 'Current password is incorrect' });
         }
-        const newPasswordHash = await bcrypt.hash(newPassword, 12);
+        const newPasswordHash = await bcrypt_1.default.hash(newPassword, 12);
         user.passwordHash = newPasswordHash;
         await user.save();
         return res.json({ message: 'Password changed successfully' });
@@ -213,26 +218,26 @@ router.post('/change-password', requireAuth, async (req, res) => {
     }
 });
 // Update profile (username/email)
-router.post('/update-profile', requireAuth, async (req, res) => {
+router.post('/update-profile', requireAuth_1.requireAuth, async (req, res) => {
     try {
         const parsed = updateProfileSchema.safeParse(req.body);
         if (!parsed.success) {
             return res.status(400).json({ error: 'Invalid input', details: parsed.error.issues });
         }
         const { email, username } = parsed.data;
-        const user = await User.findById(req.userId);
+        const user = await User_1.default.findById(req.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
         if (email && email !== user.email) {
-            const emailTaken = await User.findOne({ email });
+            const emailTaken = await User_1.default.findOne({ email });
             if (emailTaken) {
                 return res.status(409).json({ error: 'Email already exists' });
             }
             user.email = email;
         }
         if (username && username !== user.username) {
-            const usernameTaken = await User.findOne({ username });
+            const usernameTaken = await User_1.default.findOne({ username });
             if (usernameTaken) {
                 return res.status(409).json({ error: 'Username already exists' });
             }
@@ -253,14 +258,14 @@ router.post('/update-profile', requireAuth, async (req, res) => {
     }
 });
 // Save chat history
-router.post('/save-chat', requireAuth, async (req, res) => {
+router.post('/save-chat', requireAuth_1.requireAuth, async (req, res) => {
     try {
         const parsed = saveChatSchema.safeParse(req.body);
         if (!parsed.success) {
             console.error('Save chat validation error:', parsed.error.issues);
             return res.status(400).json({ error: 'Invalid input', details: parsed.error.issues });
         }
-        const user = await User.findById(req.userId);
+        const user = await User_1.default.findById(req.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -288,9 +293,9 @@ router.post('/save-chat', requireAuth, async (req, res) => {
     }
 });
 // Get all saved chats
-router.get('/chats', requireAuth, async (req, res) => {
+router.get('/chats', requireAuth_1.requireAuth, async (req, res) => {
     try {
-        const user = await User.findById(req.userId);
+        const user = await User_1.default.findById(req.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -304,10 +309,10 @@ router.get('/chats', requireAuth, async (req, res) => {
     }
 });
 // Get specific chat by ID
-router.get('/chats/:chatId', requireAuth, async (req, res) => {
+router.get('/chats/:chatId', requireAuth_1.requireAuth, async (req, res) => {
     try {
         const { chatId } = req.params;
-        const user = await User.findById(req.userId);
+        const user = await User_1.default.findById(req.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -323,11 +328,11 @@ router.get('/chats/:chatId', requireAuth, async (req, res) => {
     }
 });
 // Update chat (rename, add messages)
-router.put('/chats/:chatId', requireAuth, async (req, res) => {
+router.put('/chats/:chatId', requireAuth_1.requireAuth, async (req, res) => {
     try {
         const { chatId } = req.params;
         const { title, messages } = req.body;
-        const user = await User.findById(req.userId);
+        const user = await User_1.default.findById(req.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -354,10 +359,10 @@ router.put('/chats/:chatId', requireAuth, async (req, res) => {
     }
 });
 // Delete chat
-router.delete('/chats/:chatId', requireAuth, async (req, res) => {
+router.delete('/chats/:chatId', requireAuth_1.requireAuth, async (req, res) => {
     try {
         const { chatId } = req.params;
-        const user = await User.findById(req.userId);
+        const user = await User_1.default.findById(req.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -375,10 +380,10 @@ router.delete('/chats/:chatId', requireAuth, async (req, res) => {
     }
 });
 // Search chats
-router.get('/chats/search/:query', requireAuth, async (req, res) => {
+router.get('/chats/search/:query', requireAuth_1.requireAuth, async (req, res) => {
     try {
         const { query } = req.params;
-        const user = await User.findById(req.userId);
+        const user = await User_1.default.findById(req.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -394,5 +399,5 @@ router.get('/chats/search/:query', requireAuth, async (req, res) => {
         return res.status(500).json({ error: 'Internal server error' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=auth.js.map

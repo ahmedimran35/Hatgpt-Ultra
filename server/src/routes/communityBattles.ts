@@ -118,7 +118,7 @@ router.get('/', requireAuth, async (req: Request, res: Response) => {
     
     // Get current user to check their votes
     const currentUser = await User.findById(req.userId);
-    const currentUserId = currentUser?._id?.toString();
+    const currentUserId = currentUser?._id ? String(currentUser._id) : undefined;
     
     // Collect all battles from all users
     const allBattles = users.flatMap(user => {
@@ -127,8 +127,10 @@ router.get('/', requireAuth, async (req: Request, res: Response) => {
       
       return userBattles.map(battle => {
         // Check if current user has voted on this battle
-        const hasVoted = battle.participants?.includes(currentUserId || '') || false;
-        const userVote = hasVoted ? (battle.participants?.indexOf(currentUserId || '') === 0 ? 'model1' : 'model2') : null;
+        const hasVoted = currentUserId ? (battle.participants?.includes(currentUserId) || false) : false;
+        const userVote = hasVoted && currentUserId 
+          ? (battle.participants?.indexOf(currentUserId) === 0 ? 'model1' : 'model2') 
+          : null;
         
         return {
           id: battle.id,
@@ -297,8 +299,8 @@ router.post('/:battleId/vote', requireAuth, async (req: Request, res: Response) 
     }
 
     // Check if user already voted (using userId from token)
-    const userId = req.userId;
-    if (battle.participants.includes(userId)) {
+    const userId = req.userId || '';
+    if (userId && battle.participants.includes(userId)) {
       return res.status(400).json({ error: 'You have already voted in this battle' });
     }
 
@@ -310,7 +312,9 @@ router.post('/:battleId/vote', requireAuth, async (req: Request, res: Response) 
     }
     
     battle.totalVotes = (battle.totalVotes || 0) + 1;
-    battle.participants.push(userId);
+    if (userId) {
+      battle.participants.push(userId);
+    }
 
     user.communityBattles[battleIndex] = battle;
     

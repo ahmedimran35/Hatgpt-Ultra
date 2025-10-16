@@ -1,28 +1,33 @@
-import { Router } from 'express';
-import { z } from 'zod';
-import User from '../models/User';
-import { requireAuth } from '../middleware/requireAuth';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const zod_1 = require("zod");
+const User_1 = __importDefault(require("../models/User"));
+const requireAuth_1 = require("../middleware/requireAuth");
+const router = (0, express_1.Router)();
 // Enhanced Community Battle Schema with strict validation
-const createBattleSchema = z.object({
-    question: z.string().min(1, 'Question is required').max(1000, 'Question too long'),
-    model1: z.string().min(1, 'Model 1 is required'),
-    model2: z.string().min(1, 'Model 2 is required'),
-    model1Response: z.string().default(''),
-    model2Response: z.string().default(''),
-    duration: z.number().min(1).max(1440).default(5), // 1 minute to 24 hours
+const createBattleSchema = zod_1.z.object({
+    question: zod_1.z.string().min(1, 'Question is required').max(1000, 'Question too long'),
+    model1: zod_1.z.string().min(1, 'Model 1 is required'),
+    model2: zod_1.z.string().min(1, 'Model 2 is required'),
+    model1Response: zod_1.z.string().default(''),
+    model2Response: zod_1.z.string().default(''),
+    duration: zod_1.z.number().min(1).max(1440).default(5), // 1 minute to 24 hours
 });
-const updateBattleSchema = z.object({
-    model1Votes: z.number().min(0).optional(),
-    model2Votes: z.number().min(0).optional(),
-    totalVotes: z.number().min(0).optional(),
-    participants: z.array(z.string()).optional(),
-    isActive: z.boolean().optional(),
-    model1Response: z.string().optional(),
-    model2Response: z.string().optional(),
+const updateBattleSchema = zod_1.z.object({
+    model1Votes: zod_1.z.number().min(0).optional(),
+    model2Votes: zod_1.z.number().min(0).optional(),
+    totalVotes: zod_1.z.number().min(0).optional(),
+    participants: zod_1.z.array(zod_1.z.string()).optional(),
+    isActive: zod_1.z.boolean().optional(),
+    model1Response: zod_1.z.string().optional(),
+    model2Response: zod_1.z.string().optional(),
 });
 // Create a new community battle
-router.post('/', requireAuth, async (req, res) => {
+router.post('/', requireAuth_1.requireAuth, async (req, res) => {
     try {
         console.log('Creating battle with data:', req.body);
         // Validate input data
@@ -36,7 +41,7 @@ router.post('/', requireAuth, async (req, res) => {
         }
         const battleData = parsed.data;
         // Find user
-        const user = await User.findById(req.userId);
+        const user = await User_1.default.findById(req.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -91,34 +96,44 @@ router.post('/', requireAuth, async (req, res) => {
     }
 });
 // Get all community battles
-router.get('/', requireAuth, async (req, res) => {
+router.get('/', requireAuth_1.requireAuth, async (req, res) => {
     try {
         console.log('Fetching all community battles...');
         // Get all users with battles
-        const users = await User.find({
+        const users = await User_1.default.find({
             communityBattles: { $exists: true, $not: { $size: 0 } }
         });
         console.log(`Found ${users.length} users with battles`);
+        // Get current user to check their votes
+        const currentUser = await User_1.default.findById(req.userId);
+        const currentUserId = currentUser?._id?.toString();
         // Collect all battles from all users
         const allBattles = users.flatMap(user => {
             const userBattles = user.communityBattles || [];
             console.log(`User ${user.username || user.email} has ${userBattles.length} battles`);
-            return userBattles.map(battle => ({
-                id: battle.id,
-                question: battle.question,
-                model1: battle.model1,
-                model2: battle.model2,
-                model1Response: battle.model1Response,
-                model2Response: battle.model2Response,
-                model1Votes: battle.model1Votes || 0,
-                model2Votes: battle.model2Votes || 0,
-                totalVotes: battle.totalVotes || 0,
-                creator: user.username || user.email,
-                createdAt: battle.createdAt,
-                endTime: battle.endTime,
-                isActive: battle.isActive !== undefined ? battle.isActive : true,
-                participants: battle.participants || []
-            }));
+            return userBattles.map(battle => {
+                // Check if current user has voted on this battle
+                const hasVoted = battle.participants?.includes(currentUserId || '') || false;
+                const userVote = hasVoted ? (battle.participants?.indexOf(currentUserId || '') === 0 ? 'model1' : 'model2') : null;
+                return {
+                    id: battle.id,
+                    question: battle.question,
+                    model1: battle.model1,
+                    model2: battle.model2,
+                    model1Response: battle.model1Response,
+                    model2Response: battle.model2Response,
+                    model1Votes: battle.model1Votes || 0,
+                    model2Votes: battle.model2Votes || 0,
+                    totalVotes: battle.totalVotes || 0,
+                    creator: user.username || user.email,
+                    createdAt: battle.createdAt,
+                    endTime: battle.endTime,
+                    isActive: battle.isActive !== undefined ? battle.isActive : true,
+                    participants: battle.participants || [],
+                    hasVoted: hasVoted,
+                    userVote: userVote
+                };
+            });
         });
         // Sort by creation date (newest first)
         allBattles.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
@@ -131,10 +146,10 @@ router.get('/', requireAuth, async (req, res) => {
     }
 });
 // Get a specific battle by ID
-router.get('/:battleId', requireAuth, async (req, res) => {
+router.get('/:battleId', requireAuth_1.requireAuth, async (req, res) => {
     try {
         const { battleId } = req.params;
-        const user = await User.findOne({
+        const user = await User_1.default.findOne({
             'communityBattles.id': battleId
         });
         if (!user) {
@@ -167,7 +182,7 @@ router.get('/:battleId', requireAuth, async (req, res) => {
     }
 });
 // Update a community battle (voting, responses, etc.)
-router.put('/:battleId', requireAuth, async (req, res) => {
+router.put('/:battleId', requireAuth_1.requireAuth, async (req, res) => {
     try {
         const { battleId } = req.params;
         const updates = req.body;
@@ -181,7 +196,7 @@ router.put('/:battleId', requireAuth, async (req, res) => {
             });
         }
         // Find the user who owns this battle
-        const user = await User.findOne({
+        const user = await User_1.default.findOne({
             'communityBattles.id': battleId
         });
         if (!user) {
@@ -221,7 +236,7 @@ router.put('/:battleId', requireAuth, async (req, res) => {
     }
 });
 // Vote for a model in a battle
-router.post('/:battleId/vote', requireAuth, async (req, res) => {
+router.post('/:battleId/vote', requireAuth_1.requireAuth, async (req, res) => {
     try {
         const { battleId } = req.params;
         const { model } = req.body; // 'model1' or 'model2'
@@ -229,7 +244,7 @@ router.post('/:battleId/vote', requireAuth, async (req, res) => {
             return res.status(400).json({ error: 'Invalid model selection' });
         }
         // Find the user who owns this battle
-        const user = await User.findOne({
+        const user = await User_1.default.findOne({
             'communityBattles.id': battleId
         });
         if (!user) {
@@ -282,11 +297,11 @@ router.post('/:battleId/vote', requireAuth, async (req, res) => {
     }
 });
 // Delete a community battle
-router.delete('/:battleId', requireAuth, async (req, res) => {
+router.delete('/:battleId', requireAuth_1.requireAuth, async (req, res) => {
     try {
         const { battleId } = req.params;
         // Find the user who owns this battle
-        const user = await User.findOne({
+        const user = await User_1.default.findOne({
             'communityBattles.id': battleId
         });
         if (!user) {
@@ -312,10 +327,10 @@ router.delete('/:battleId', requireAuth, async (req, res) => {
     }
 });
 // Clean up expired battles
-router.post('/cleanup-expired', requireAuth, async (req, res) => {
+router.post('/cleanup-expired', requireAuth_1.requireAuth, async (req, res) => {
     try {
         console.log('Cleaning up expired battles...');
-        const users = await User.find({ communityBattles: { $exists: true } });
+        const users = await User_1.default.find({ communityBattles: { $exists: true } });
         let totalCleaned = 0;
         const now = new Date();
         for (const user of users) {
@@ -347,5 +362,5 @@ router.post('/cleanup-expired', requireAuth, async (req, res) => {
         return res.status(500).json({ error: 'Internal server error' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=communityBattles.js.map

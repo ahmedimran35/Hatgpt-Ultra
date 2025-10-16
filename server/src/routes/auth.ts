@@ -90,9 +90,9 @@ router.post('/signup', async (req: Request, res: Response) => {
     const user = await User.create({ email, username, passwordHash });
     
     const token = jwt.sign(
-      { userId: user._id.toString() }, 
-      process.env.JWT_SECRET || 'dev_secret_change_me', 
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+      { userId: String(user._id) },
+      (process.env.JWT_SECRET || 'dev_secret_change_me') as jwt.Secret,
+      { expiresIn: (process.env.JWT_EXPIRES_IN || '7d') as any }
     );
     
     return res.json({ 
@@ -129,9 +129,9 @@ router.post('/login', async (req: Request, res: Response) => {
     }
     
     const token = jwt.sign(
-      { userId: user._id.toString() }, 
-      process.env.JWT_SECRET || 'dev_secret_change_me', 
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+      { userId: String(user._id) }, 
+      (process.env.JWT_SECRET || 'dev_secret_change_me') as jwt.Secret, 
+      { expiresIn: (process.env.JWT_EXPIRES_IN || '7d') as any }
     );
     
     return res.json({ 
@@ -394,7 +394,7 @@ router.put('/chats/:chatId', requireAuth, async (req: Request, res: Response) =>
       user.savedChats[chatIndex].title = title;
     }
     if (messages) {
-      user.savedChats[chatIndex].messages = messages.map(msg => ({
+      user.savedChats[chatIndex].messages = (messages as ChatMessage[]).map((msg: ChatMessage) => ({
         ...msg,
         timestamp: new Date(),
       }));

@@ -1,27 +1,32 @@
-import { Router } from 'express';
-import { z } from 'zod';
-import { requireAuth } from '../middleware/requireAuth';
-import axios from 'axios';
-const router = Router();
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const zod_1 = require("zod");
+const requireAuth_1 = require("../middleware/requireAuth");
+const axios_1 = __importDefault(require("axios"));
+const router = (0, express_1.Router)();
 // Image generation schema
-const imageGenerationSchema = z.object({
-    prompt: z.string().min(1).max(500),
-    model: z.string().optional().default('flux'),
-    width: z.number().min(256).max(2048).optional().default(1024),
-    height: z.number().min(256).max(2048).optional().default(1024),
+const imageGenerationSchema = zod_1.z.object({
+    prompt: zod_1.z.string().min(1).max(500),
+    model: zod_1.z.string().optional().default('flux'),
+    width: zod_1.z.number().min(256).max(2048).optional().default(1024),
+    height: zod_1.z.number().min(256).max(2048).optional().default(1024),
 });
 // Audio generation schema
-const audioGenerationSchema = z.object({
-    text: z.string().min(1).max(1000),
-    voice: z.string().optional().default('alloy'),
+const audioGenerationSchema = zod_1.z.object({
+    text: zod_1.z.string().min(1).max(1000),
+    voice: zod_1.z.string().optional().default('alloy'),
 });
 // Text generation schema for Pollinations models
-const textGenerationSchema = z.object({
-    prompt: z.string().min(1).max(20000),
-    model: z.string(),
+const textGenerationSchema = zod_1.z.object({
+    prompt: zod_1.z.string().min(1).max(20000),
+    model: zod_1.z.string(),
 });
 // Image generation endpoint
-router.post('/image', requireAuth, async (req, res) => {
+router.post('/image', requireAuth_1.requireAuth, async (req, res) => {
     try {
         const parsed = imageGenerationSchema.safeParse(req.body);
         if (!parsed.success) {
@@ -52,7 +57,7 @@ router.post('/image', requireAuth, async (req, res) => {
     }
 });
 // Audio generation endpoint
-router.post('/audio', requireAuth, async (req, res) => {
+router.post('/audio', requireAuth_1.requireAuth, async (req, res) => {
     try {
         const parsed = audioGenerationSchema.safeParse(req.body);
         if (!parsed.success) {
@@ -81,7 +86,7 @@ router.post('/audio', requireAuth, async (req, res) => {
     }
 });
 // Text generation endpoint for Pollinations models
-router.post('/text', requireAuth, async (req, res) => {
+router.post('/text', requireAuth_1.requireAuth, async (req, res) => {
     try {
         const parsed = textGenerationSchema.safeParse(req.body);
         if (!parsed.success) {
@@ -101,7 +106,7 @@ router.post('/text', requireAuth, async (req, res) => {
             try {
                 // Use the correct Pollinations API endpoint with token authentication
                 const apiKey = process.env.POLLINATIONS_API_KEY;
-                const response = await axios.get(`https://text.pollinations.ai/${encodeURIComponent(prompt)}?model=${model}&token=${apiKey}`, {
+                const response = await axios_1.default.get(`https://text.pollinations.ai/${encodeURIComponent(prompt)}?model=${model}&token=${apiKey}`, {
                     timeout: 30000 // 30 second timeout
                 });
                 // Pollinations API returns plain text, not JSON
@@ -149,5 +154,5 @@ router.post('/text', requireAuth, async (req, res) => {
         res.status(500).json({ error: 'Failed to generate text' });
     }
 });
-export default router;
+exports.default = router;
 //# sourceMappingURL=generation.js.map

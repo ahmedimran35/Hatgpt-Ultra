@@ -32,7 +32,7 @@ router.post('/image', requireAuth, async (req, res) => {
     if (!parsed.success) {
       return res.status(400).json({ 
         error: 'Invalid input', 
-        details: parsed.error.errors 
+        details: parsed.error.issues 
       });
     }
 
@@ -68,7 +68,7 @@ router.post('/audio', requireAuth, async (req, res) => {
     if (!parsed.success) {
       return res.status(400).json({ 
         error: 'Invalid input', 
-        details: parsed.error.errors 
+        details: parsed.error.issues 
       });
     }
 
@@ -103,7 +103,7 @@ router.post('/text', requireAuth, async (req, res) => {
     if (!parsed.success) {
       return res.status(400).json({ 
         error: 'Invalid input', 
-        details: parsed.error.errors 
+        details: parsed.error.issues 
       });
     }
 
