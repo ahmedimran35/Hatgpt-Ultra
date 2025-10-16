@@ -1496,7 +1496,7 @@ export default function AppShell() {
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowChatHistory(true)}
-                  className="ml-2 rounded-full px-3 py-1.5 text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200"
+                  className="ml-2 hidden md:inline-flex rounded-full px-3 py-1.5 text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200"
                 >
                   <span className="mr-1">📚</span>
                   <span className="text-sm font-medium">History</span>
@@ -1554,24 +1554,7 @@ export default function AppShell() {
                     <span className="text-sm font-medium">Community</span>
                   </Button>
                 </div>
-                <div className="relative md:hidden">
-                  <button
-                    onClick={() => setModeMenuOpen(v => !v)}
-                    aria-label="Open mode menu"
-                    className="p-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 active:bg-gray-100"
-                  >
-                    <span className="text-sm font-medium">Mode</span>
-                  </button>
-                  {modeMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-44 rounded-lg border border-gray-200 bg-white shadow-lg py-1 z-[250]">
-                      <button onClick={() => { setMode('single'); setModeMenuOpen(false); }} className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${mode==='single'?'text-emerald-600 font-medium':''}`}>💬 Single</button>
-                      <button onClick={() => { setMode('compare'); setModeMenuOpen(false); }} className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${mode==='compare'?'text-emerald-600 font-medium':''}`}>⚖️ Compare</button>
-                      <button onClick={() => { setMode('smart'); setModeMenuOpen(false); }} className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${mode==='smart'?'text-emerald-600 font-medium':''}`}>🧠 Smart</button>
-                      <button onClick={() => { setMode('arena'); setModeMenuOpen(false); }} className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${mode==='arena'?'text-emerald-600 font-medium':''}`}>🥊 Arena</button>
-                      <button onClick={() => { setMode('community'); setModeMenuOpen(false); }} className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${mode==='community'?'text-emerald-600 font-medium':''}`}>🌍 Community</button>
-                    </div>
-                  )}
-                </div>
+                <div className="hidden" />
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -1654,7 +1637,14 @@ export default function AppShell() {
                     <span className="inline-block w-1 h-1 bg-gray-700 rounded-full" />
                   </button>
                   {userMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg py-2 z-[260]">
+                    <div className="absolute right-0 mt-2 w-56 rounded-lg border border-gray-200 bg-white shadow-lg py-2 z-[260]">
+                      <div className="px-2 pb-1 text-xs font-semibold text-gray-500">Switch mode</div>
+                      <button onClick={() => { setMode('single'); setUserMenuOpen(false); }} className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${mode==='single'?'text-emerald-600 font-medium':''}`}>💬 Single</button>
+                      <button onClick={() => { setMode('compare'); setUserMenuOpen(false); }} className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${mode==='compare'?'text-emerald-600 font-medium':''}`}>⚖️ Compare</button>
+                      <button onClick={() => { setMode('smart'); setUserMenuOpen(false); }} className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${mode==='smart'?'text-emerald-600 font-medium':''}`}>🧠 Smart</button>
+                      <button onClick={() => { setMode('arena'); setUserMenuOpen(false); }} className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${mode==='arena'?'text-emerald-600 font-medium':''}`}>🥊 Arena</button>
+                      <button onClick={() => { setMode('community'); setUserMenuOpen(false); }} className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${mode==='community'?'text-emerald-600 font-medium':''}`}>🌍 Community</button>
+                      <div className="my-2 border-t border-gray-200" />
                       <button onClick={() => { setShowChatHistory(true); setUserMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">📚 History</button>
                       <button onClick={() => { setSidebarOpen(true); setUserMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">👤 Profile</button>
                       <div className="px-4 py-2 text-sm text-gray-600">🔋 Tokens: {(user?.monthlyTokens ?? 0).toLocaleString()}</div>
