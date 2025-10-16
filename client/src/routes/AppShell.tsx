@@ -1569,10 +1569,10 @@ export default function AppShell() {
                     className="flex items-center gap-2 rounded-full border border-gray-200 bg-white/70 px-3 py-1.5 text-sm text-gray-700 shadow-sm hover:bg-white hover:shadow-md transition-all duration-200"
                   >
                     <div className="h-6 w-6 rounded-full bg-gradient-to-br from-emerald-400 to-teal-400 flex items-center justify-center text-white font-bold text-xs">
-                      {user.username.charAt(0).toUpperCase()}
+                      {(user?.username?.charAt(0)?.toUpperCase() ?? 'U')}
                     </div>
                     <div className="flex flex-col items-start">
-                      <span className="text-sm font-medium text-gray-900">{user.username}</span>
+                      <span className="text-sm font-medium text-gray-900">{user?.username ?? 'User'}</span>
                       <span className="text-xs text-gray-500">Free User</span>
                     </div>
                   </button>
