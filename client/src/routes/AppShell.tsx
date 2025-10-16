@@ -156,6 +156,7 @@ export default function AppShell() {
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
   const transcriptBufferRef = useRef<string>('');
+  const [modeMenuOpen, setModeMenuOpen] = useState(false);
   const [, setIsAnalyzing] = useState(false);
   const [, setAnalysis] = useState<string>('');
   const [, setSelectedModel] = useState<string>('');
@@ -1505,7 +1506,7 @@ export default function AppShell() {
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200">
                   Mode
                 </span>
-                <div className="inline-flex items-center gap-1 p-1 bg-gray-100 rounded-lg min-w-max">
+                <div className="hidden md:inline-flex items-center gap-1 p-1 bg-gray-100 rounded-lg min-w-max">
                   <Button 
                     variant={mode === 'single' ? 'primary' : 'ghost'} 
                     size="sm" 
@@ -1551,6 +1552,26 @@ export default function AppShell() {
                     <span className="mr-1">🌍</span>
                     <span className="text-sm font-medium">Community</span>
                   </Button>
+                </div>
+                <div className="relative md:hidden">
+                  <button
+                    onClick={() => setModeMenuOpen(v => !v)}
+                    aria-label="Open mode menu"
+                    className="p-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 active:bg-gray-100"
+                  >
+                    <span className="inline-block w-1 h-1 bg-gray-700 rounded-full" />
+                    <span className="inline-block w-1 h-1 bg-gray-700 rounded-full mx-1" />
+                    <span className="inline-block w-1 h-1 bg-gray-700 rounded-full" />
+                  </button>
+                  {modeMenuOpen && (
+                    <div className="absolute right-0 mt-2 w-44 rounded-lg border border-gray-200 bg-white shadow-lg py-1 z-50">
+                      <button onClick={() => { setMode('single'); setModeMenuOpen(false); }} className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${mode==='single'?'text-emerald-600 font-medium':''}`}>💬 Single</button>
+                      <button onClick={() => { setMode('compare'); setModeMenuOpen(false); }} className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${mode==='compare'?'text-emerald-600 font-medium':''}`}>⚖️ Compare</button>
+                      <button onClick={() => { setMode('smart'); setModeMenuOpen(false); }} className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${mode==='smart'?'text-emerald-600 font-medium':''}`}>🧠 Smart</button>
+                      <button onClick={() => { setMode('arena'); setModeMenuOpen(false); }} className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${mode==='arena'?'text-emerald-600 font-medium':''}`}>🥊 Arena</button>
+                      <button onClick={() => { setMode('community'); setModeMenuOpen(false); }} className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${mode==='community'?'text-emerald-600 font-medium':''}`}>🌍 Community</button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
