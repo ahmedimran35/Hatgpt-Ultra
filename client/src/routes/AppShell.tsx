@@ -1485,7 +1485,7 @@ export default function AppShell() {
   return (
     <div className="h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 flex flex-col overflow-y-auto">
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200 flex-shrink-0 shadow-sm">
+      <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200 flex-shrink-0 shadow-sm sticky top-0 z-[200]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
@@ -1563,7 +1563,7 @@ export default function AppShell() {
                     <span className="text-sm font-medium">Mode</span>
                   </button>
                   {modeMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-44 rounded-lg border border-gray-200 bg-white shadow-lg py-1 z-[70]">
+                    <div className="absolute right-0 mt-2 w-44 rounded-lg border border-gray-200 bg-white shadow-lg py-1 z-[250]">
                       <button onClick={() => { setMode('single'); setModeMenuOpen(false); }} className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${mode==='single'?'text-emerald-600 font-medium':''}`}>💬 Single</button>
                       <button onClick={() => { setMode('compare'); setModeMenuOpen(false); }} className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${mode==='compare'?'text-emerald-600 font-medium':''}`}>⚖️ Compare</button>
                       <button onClick={() => { setMode('smart'); setModeMenuOpen(false); }} className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${mode==='smart'?'text-emerald-600 font-medium':''}`}>🧠 Smart</button>
@@ -1654,7 +1654,7 @@ export default function AppShell() {
                     <span className="inline-block w-1 h-1 bg-gray-700 rounded-full" />
                   </button>
                   {userMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg py-2 z-[80]">
+                    <div className="absolute right-0 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg py-2 z-[260]">
                       <button onClick={() => { setShowChatHistory(true); setUserMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">📚 History</button>
                       <button onClick={() => { setSidebarOpen(true); setUserMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">👤 Profile</button>
                       <div className="px-4 py-2 text-sm text-gray-600">🔋 Tokens: {(user?.monthlyTokens ?? 0).toLocaleString()}</div>
