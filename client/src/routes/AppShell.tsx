@@ -156,10 +156,9 @@ export default function AppShell() {
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
   const transcriptBufferRef = useRef<string>('');
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysis, setAnalysis] = useState<string>('');
-  const [selectedModel, setSelectedModel] = useState<string>('');
-  const [modelSelectionHistory, setModelSelectionHistory] = useState<Array<{question: string, model: string, success: boolean}>>([]);
+  const [, setIsAnalyzing] = useState(false);
+  const [, setAnalysis] = useState<string>('');
+  const [, setSelectedModel] = useState<string>('');
 
   // Helper: only show messages that match current generation type
   function isVisibleMessage(msg: Message): boolean {
@@ -792,13 +791,7 @@ export default function AppShell() {
   };
 
   // Function to track model selection success (for future learning)
-  const trackModelSelection = (question: string, model: string, success: boolean) => {
-    setModelSelectionHistory(prev => {
-      const newHistory = [...prev, { question, model, success }];
-      // Keep only last 50 selections to avoid memory issues
-      return newHistory.slice(-50);
-    });
-  };
+  // Removed unused function to satisfy TypeScript unused variable rule
 
   async function sendSmartPromptWithText(text: string, selectedModel: string) {
     const trimmed = text.trim();
@@ -895,7 +888,8 @@ export default function AppShell() {
     setIsSending(false);
   }
 
-  async function sendPromptWithText(text: string) {
+  // Removed unused function to satisfy TypeScript unused variable rule
+  /* async function sendPromptWithText(text: string) {
     const trimmed = text.trim();
     if (!trimmed) return;
     
@@ -1011,7 +1005,7 @@ export default function AppShell() {
     }
     
     setIsSending(false);
-  }
+  } */
 
   async function sendPrompt() {
     const trimmed = prompt.trim();
@@ -2059,6 +2053,7 @@ export default function AppShell() {
             setPrompt={setPrompt}
             messages={smartChatConversation}
             onSmartSend={handleSmartSend}
+            onClearChat={() => clearChat()}
           />
         ) : mode === 'arena' ? (
           <AIArena />

@@ -1,7 +1,6 @@
 import { useState, useRef } from 'react';
 import Button from './Button';
 import { Card, CardBody, CardHeader } from './Card';
-import axios from 'axios';
 
 interface DebateMessage {
   id: string;

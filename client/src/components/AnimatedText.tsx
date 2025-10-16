@@ -4,14 +4,12 @@ interface AnimatedTextProps {
   text: string;
   className?: string;
   delay?: number;
-  duration?: number;
 }
 
 export default function AnimatedText({ 
   text, 
   className = '', 
-  delay = 0, 
-  duration = 1000 
+  delay = 0 
 }: AnimatedTextProps) {
   const [isVisible, setIsVisible] = useState(false);
 

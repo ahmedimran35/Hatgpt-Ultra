@@ -1,7 +1,4 @@
 import { Link } from 'react-router-dom';
-import Button from '../components/Button';
-import { Card, CardBody } from '../components/Card';
-import ParticleBackground from '../components/ParticleBackground';
 import AnimatedText from '../components/AnimatedText';
 import FadeInSection from '../components/FadeInSection';
 
@@ -117,7 +114,8 @@ export default function Landing() {
 	);
 }
 
-function ModelCard({ title, text, color }) {
+type ModelCardProps = { title: string; text: string; color: string };
+function ModelCard({ title, text, color }: ModelCardProps) {
 	return (
 		<div className={`rounded-xl bg-gradient-to-r ${color} p-4 shadow-sm border border-gray-100 transition hover:scale-[1.02]`}>
 			<h4 className="font-semibold text-gray-900">{title}</h4>
@@ -126,7 +124,8 @@ function ModelCard({ title, text, color }) {
 	);
 }
 
-function FeatureCard({ icon, title, text }) {
+type FeatureCardProps = { icon: string; title: string; text: string };
+function FeatureCard({ icon, title, text }: FeatureCardProps) {
 	return (
 		<div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6 hover:shadow-lg transition">
 			<div className="text-3xl mb-3">{icon}</div>

@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Button from '../components/Button';
-import Input from '../components/Input';
-import { Card, CardBody } from '../components/Card';
-import AnimatedText from '../components/AnimatedText';
+// Removed unused UI imports
 import FadeInSection from '../components/FadeInSection';
 
 export default function Signup() {

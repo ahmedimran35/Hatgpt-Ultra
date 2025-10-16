@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import Button from './Button';
 import { Card, CardBody, CardHeader } from './Card';
 
@@ -14,12 +14,15 @@ interface SmartAnswerProps {
 }
 
 const SmartAnswer: React.FC<SmartAnswerProps> = ({
-  onSendPrompt,
+  // onSendPrompt not directly used within this component (actions come from parent)
+  onSendPrompt: _onSendPrompt,
   isSending,
-  prompt,
-  setPrompt,
+  // prompt and setPrompt not directly used here (display-only for now)
+  prompt: _prompt,
+  setPrompt: _setPrompt,
   messages,
-  onSmartSend,
+  // onSmartSend not directly used here; actions wired in parent toolbar
+  onSmartSend: _onSmartSend,
   onClearChat,
   onStopGeneration
 }) => {
@@ -79,7 +82,6 @@ const SmartAnswer: React.FC<SmartAnswerProps> = ({
         </CardHeader>
         <CardBody className="flex-1 p-0 overflow-hidden min-h-0">
           <div className="space-y-4 overflow-y-auto h-full p-6 overscroll-contain touch-pan-y scrollbar-thin scrollbar-thumb-emerald-200 scrollbar-track-transparent">
-            {console.log('SmartAnswer render state:', { isSending, messagesLength: messages.length })}
             {isSending && messages.length === 0 ? (
               <div className="flex items-center justify-center h-full text-center">
                 <div className="space-y-6">

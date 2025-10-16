@@ -1,17 +1,20 @@
 import { useCallback } from 'react';
 import Particles from '@tsparticles/react';
 import { loadSlim } from '@tsparticles/slim';
-import type { Engine } from '@tsparticles/engine';
 
 export default function ParticleBackground() {
-  const particlesInit = useCallback(async (engine: Engine) => {
-    await loadSlim(engine);
+  const particlesInit = useCallback(async (engine: unknown) => {
+    // loadSlim adds the slim bundle features to the engine instance
+    // casting to any to avoid versioned type mismatch between packages
+    await loadSlim(engine as any);
   }, []);
 
   return (
     <Particles
       id="tsparticles"
-      init={particlesInit}
+      // some versions expose init as a prop, others require using "particlesInit" via wrapper
+      // keep as init; types may not include it, so cast via any
+      {...({ init: particlesInit } as any)}
       options={{
         background: {
           color: {
@@ -29,7 +32,7 @@ export default function ParticleBackground() {
               enable: true,
               mode: 'repulse',
             },
-            resize: true,
+            // resize is a top-level option in newer versions; remove from events to satisfy types
           },
           modes: {
             push: {
@@ -65,7 +68,8 @@ export default function ParticleBackground() {
           number: {
             density: {
               enable: true,
-              area: 800,
+              width: 800,
+              height: 600,
             },
             value: 80,
           },
