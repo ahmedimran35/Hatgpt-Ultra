@@ -1501,11 +1501,11 @@ export default function AppShell() {
                   <span className="ml-1 text-xs text-emerald-600">(Auto-saved)</span>
                 </Button>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200">
                   Mode
                 </span>
-                <div className="inline-flex items-center gap-1 p-1 bg-gray-100 rounded-lg">
+                <div className="inline-flex items-center gap-1 p-1 bg-gray-100 rounded-lg min-w-max">
                   <Button 
                     variant={mode === 'single' ? 'primary' : 'ghost'} 
                     size="sm" 
