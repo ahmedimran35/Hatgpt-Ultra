@@ -1560,12 +1560,10 @@ export default function AppShell() {
                     aria-label="Open mode menu"
                     className="p-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 active:bg-gray-100"
                   >
-                    <span className="inline-block w-1 h-1 bg-gray-700 rounded-full" />
-                    <span className="inline-block w-1 h-1 bg-gray-700 rounded-full mx-1" />
-                    <span className="inline-block w-1 h-1 bg-gray-700 rounded-full" />
+                    <span className="text-sm font-medium">Mode</span>
                   </button>
                   {modeMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-44 rounded-lg border border-gray-200 bg-white shadow-lg py-1 z-50">
+                    <div className="absolute right-0 mt-2 w-44 rounded-lg border border-gray-200 bg-white shadow-lg py-1 z-[70]">
                       <button onClick={() => { setMode('single'); setModeMenuOpen(false); }} className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${mode==='single'?'text-emerald-600 font-medium':''}`}>💬 Single</button>
                       <button onClick={() => { setMode('compare'); setModeMenuOpen(false); }} className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${mode==='compare'?'text-emerald-600 font-medium':''}`}>⚖️ Compare</button>
                       <button onClick={() => { setMode('smart'); setModeMenuOpen(false); }} className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${mode==='smart'?'text-emerald-600 font-medium':''}`}>🧠 Smart</button>
@@ -1656,7 +1654,7 @@ export default function AppShell() {
                     <span className="inline-block w-1 h-1 bg-gray-700 rounded-full" />
                   </button>
                   {userMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg py-2 z-50">
+                    <div className="absolute right-0 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg py-2 z-[80]">
                       <button onClick={() => { setShowChatHistory(true); setUserMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">📚 History</button>
                       <button onClick={() => { setSidebarOpen(true); setUserMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">👤 Profile</button>
                       <div className="px-4 py-2 text-sm text-gray-600">🔋 Tokens: {(user?.monthlyTokens ?? 0).toLocaleString()}</div>
