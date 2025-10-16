@@ -156,7 +156,6 @@ export default function AppShell() {
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
   const transcriptBufferRef = useRef<string>('');
-  const [modeMenuOpen, setModeMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [, setIsAnalyzing] = useState(false);
   const [, setAnalysis] = useState<string>('');
