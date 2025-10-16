@@ -1,13 +1,15 @@
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import AnimatedText from '../components/AnimatedText';
 import FadeInSection from '../components/FadeInSection';
 
 export default function Landing() {
+	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 	return (
 		<div className="min-h-screen bg-white text-gray-800 antialiased">
 			{/* Header */}
-            <header className="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+			<header className="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+				<div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
 					<div className="flex items-center gap-2">
 						<div className="h-9 w-9 rounded-md bg-gradient-to-br from-emerald-400 to-teal-400 flex items-center justify-center text-white font-bold shadow">H</div>
 						<span className="font-semibold text-lg tracking-tight">HatGPT Ultra</span>
@@ -23,11 +25,27 @@ export default function Landing() {
 							<button className="px-4 py-2 text-sm font-medium text-white rounded-md bg-gradient-to-r from-emerald-400 to-teal-400 shadow hover:opacity-90 transition">Get Started</button>
 						</Link>
 					</nav>
-					{/* Mobile menu button */}
-					<div className="md:hidden">
-						<Link to="/login">
-							<button className="px-3 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition">Sign In</button>
-						</Link>
+					{/* Mobile menu (3 dots) */}
+					<div className="relative md:hidden">
+						<button
+							onClick={() => setMobileMenuOpen(v => !v)}
+							aria-label="Open menu"
+							className="p-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 active:bg-gray-100"
+						>
+							<span className="inline-block w-1 h-1 bg-gray-700 rounded-full" />
+							<span className="inline-block w-1 h-1 bg-gray-700 rounded-full mx-1" />
+							<span className="inline-block w-1 h-1 bg-gray-700 rounded-full" />
+						</button>
+						{mobileMenuOpen && (
+							<div className="absolute right-0 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg py-2 z-50">
+								<a href="#features" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Features</a>
+								<a href="#whyus" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Why Free</a>
+								<a href="#community" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Community</a>
+								<div className="my-2 border-t border-gray-200"></div>
+								<Link to="/login" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Sign In</Link>
+								<Link to="/signup" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Get Started</Link>
+							</div>
+						)}
 					</div>
 				</div>
 			</header>
