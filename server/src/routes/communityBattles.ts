@@ -238,11 +238,11 @@ router.put('/:battleId', requireAuth, async (req: Request, res: Response) => {
     }
 
     // Update the battle
-    const currentBattle = user.communityBattles[battleIndex];
+    const currentBattle = user.communityBattles[battleIndex]!;
     const updatedBattle = {
       ...currentBattle,
       ...parsed.data
-    };
+    } as typeof currentBattle;
 
     user.communityBattles[battleIndex] = updatedBattle;
     
@@ -291,7 +291,7 @@ router.post('/:battleId/vote', requireAuth, async (req: Request, res: Response) 
       return res.status(404).json({ error: 'Battle not found' });
     }
 
-    const battle = user.communityBattles[battleIndex];
+    const battle = user.communityBattles[battleIndex]!;
     
     // Check if battle is still active
     if (!battle.isActive) {

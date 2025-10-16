@@ -81,7 +81,7 @@ router.post('/signup', async (req, res) => {
         }
         const passwordHash = await bcrypt_1.default.hash(password, 12);
         const user = await User_1.default.create({ email, username, passwordHash });
-        const token = jsonwebtoken_1.default.sign({ userId: user._id.toString() }, process.env.JWT_SECRET || 'dev_secret_change_me', { expiresIn: process.env.JWT_EXPIRES_IN || '7d' });
+        const token = jsonwebtoken_1.default.sign({ userId: String(user._id) }, (process.env.JWT_SECRET || 'dev_secret_change_me'), { expiresIn: (process.env.JWT_EXPIRES_IN || '7d') });
         return res.json({
             token,
             user: {
@@ -112,7 +112,7 @@ router.post('/login', async (req, res) => {
         if (!ok) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
-        const token = jsonwebtoken_1.default.sign({ userId: user._id.toString() }, process.env.JWT_SECRET || 'dev_secret_change_me', { expiresIn: process.env.JWT_EXPIRES_IN || '7d' });
+        const token = jsonwebtoken_1.default.sign({ userId: String(user._id) }, (process.env.JWT_SECRET || 'dev_secret_change_me'), { expiresIn: (process.env.JWT_EXPIRES_IN || '7d') });
         return res.json({
             token,
             user: {
@@ -270,19 +270,31 @@ router.post('/save-chat', requireAuth_1.requireAuth, async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
         const chatId = `chat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        const newChat = {
+        const newChatBase = {
             id: chatId,
             title: parsed.data.title,
-            messages: parsed.data.messages.map(msg => ({
-                ...msg,
-                timestamp: new Date(),
-            })),
+            messages: parsed.data.messages.map((msg) => {
+                const base = {
+                    role: msg.role,
+                    content: msg.content,
+                    timestamp: new Date(),
+                };
+                const withOptionals = {
+                    ...(msg.model !== undefined ? { model: msg.model } : {}),
+                    ...(msg.type !== undefined ? { type: msg.type } : {}),
+                    ...(msg.imageUrl !== undefined ? { imageUrl: msg.imageUrl } : {}),
+                    ...(msg.audioUrl !== undefined ? { audioUrl: msg.audioUrl } : {}),
+                };
+                return { ...base, ...withOptionals };
+            }),
             mode: parsed.data.mode,
             generationType: parsed.data.generationType,
-            models: parsed.data.models,
             createdAt: new Date(),
             updatedAt: new Date(),
         };
+        const newChat = parsed.data.models
+            ? { ...newChatBase, models: parsed.data.models }
+            : { ...newChatBase };
         user.savedChats.push(newChat);
         await user.save();
         return res.json({ chatId, message: 'Chat saved successfully' });
@@ -340,16 +352,27 @@ router.put('/chats/:chatId', requireAuth_1.requireAuth, async (req, res) => {
         if (chatIndex === -1) {
             return res.status(404).json({ error: 'Chat not found' });
         }
+        const chat = user.savedChats[chatIndex];
         if (title) {
-            user.savedChats[chatIndex].title = title;
+            chat.title = title;
         }
         if (messages) {
-            user.savedChats[chatIndex].messages = messages.map(msg => ({
-                ...msg,
-                timestamp: new Date(),
-            }));
+            chat.messages = messages.map((msg) => {
+                const base = {
+                    role: msg.role,
+                    content: msg.content,
+                    timestamp: new Date(),
+                };
+                const optionals = {
+                    ...(msg.model !== undefined ? { model: msg.model } : {}),
+                    ...(msg.type !== undefined ? { type: msg.type } : {}),
+                    ...(msg.imageUrl !== undefined ? { imageUrl: msg.imageUrl } : {}),
+                    ...(msg.audioUrl !== undefined ? { audioUrl: msg.audioUrl } : {}),
+                };
+                return { ...base, ...optionals };
+            });
         }
-        user.savedChats[chatIndex].updatedAt = new Date();
+        chat.updatedAt = new Date();
         await user.save();
         return res.json({ message: 'Chat updated successfully' });
     }
@@ -387,7 +410,7 @@ router.get('/chats/search/:query', requireAuth_1.requireAuth, async (req, res) =
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
-        const searchQuery = query.toLowerCase();
+        const searchQuery = (query || '').toLowerCase();
         const filteredChats = user.savedChats.filter(chat => chat.title.toLowerCase().includes(searchQuery) ||
             chat.messages.some(msg => msg.content.toLowerCase().includes(searchQuery)));
         // Sort by updatedAt descending

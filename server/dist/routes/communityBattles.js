@@ -106,15 +106,17 @@ router.get('/', requireAuth_1.requireAuth, async (req, res) => {
         console.log(`Found ${users.length} users with battles`);
         // Get current user to check their votes
         const currentUser = await User_1.default.findById(req.userId);
-        const currentUserId = currentUser?._id?.toString();
+        const currentUserId = currentUser?._id ? String(currentUser._id) : undefined;
         // Collect all battles from all users
         const allBattles = users.flatMap(user => {
             const userBattles = user.communityBattles || [];
             console.log(`User ${user.username || user.email} has ${userBattles.length} battles`);
             return userBattles.map(battle => {
                 // Check if current user has voted on this battle
-                const hasVoted = battle.participants?.includes(currentUserId || '') || false;
-                const userVote = hasVoted ? (battle.participants?.indexOf(currentUserId || '') === 0 ? 'model1' : 'model2') : null;
+                const hasVoted = currentUserId ? (battle.participants?.includes(currentUserId) || false) : false;
+                const userVote = hasVoted && currentUserId
+                    ? (battle.participants?.indexOf(currentUserId) === 0 ? 'model1' : 'model2')
+                    : null;
                 return {
                     id: battle.id,
                     question: battle.question,
@@ -260,8 +262,8 @@ router.post('/:battleId/vote', requireAuth_1.requireAuth, async (req, res) => {
             return res.status(400).json({ error: 'Battle is no longer active' });
         }
         // Check if user already voted (using userId from token)
-        const userId = req.userId;
-        if (battle.participants.includes(userId)) {
+        const userId = req.userId || '';
+        if (userId && battle.participants.includes(userId)) {
             return res.status(400).json({ error: 'You have already voted in this battle' });
         }
         // Update vote counts
@@ -272,7 +274,9 @@ router.post('/:battleId/vote', requireAuth_1.requireAuth, async (req, res) => {
             battle.model2Votes = (battle.model2Votes || 0) + 1;
         }
         battle.totalVotes = (battle.totalVotes || 0) + 1;
-        battle.participants.push(userId);
+        if (userId) {
+            battle.participants.push(userId);
+        }
         user.communityBattles[battleIndex] = battle;
         try {
             await user.save();

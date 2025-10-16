@@ -309,19 +309,31 @@ router.post('/save-chat', requireAuth, async (req: Request, res: Response) => {
     }
 
     const chatId = `chat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const newChat: SavedChat = {
+    const newChatBase: Omit<SavedChat, 'models'> = {
       id: chatId,
       title: parsed.data.title,
-      messages: parsed.data.messages.map(msg => ({
-        ...msg,
-        timestamp: new Date(),
-      })),
+      messages: parsed.data.messages.map((msg) => {
+        const base: ChatMessage = {
+          role: msg.role,
+          content: msg.content,
+          timestamp: new Date(),
+        };
+        const withOptionals: Partial<ChatMessage> = {
+          ...(msg.model !== undefined ? { model: msg.model } : {}),
+          ...(msg.type !== undefined ? { type: msg.type } : {}),
+          ...(msg.imageUrl !== undefined ? { imageUrl: msg.imageUrl } : {}),
+          ...(msg.audioUrl !== undefined ? { audioUrl: msg.audioUrl } : {}),
+        };
+        return { ...base, ...withOptionals } as ChatMessage;
+      }),
       mode: parsed.data.mode,
       generationType: parsed.data.generationType,
-      models: parsed.data.models,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
+    const newChat: SavedChat = parsed.data.models
+      ? { ...newChatBase, models: parsed.data.models }
+      : { ...newChatBase } as SavedChat;
 
     user.savedChats.push(newChat);
     await user.save();
@@ -390,16 +402,27 @@ router.put('/chats/:chatId', requireAuth, async (req: Request, res: Response) =>
       return res.status(404).json({ error: 'Chat not found' });
     }
 
+    const chat = user.savedChats[chatIndex]!;
     if (title) {
-      user.savedChats[chatIndex].title = title;
+      chat.title = title;
     }
     if (messages) {
-      user.savedChats[chatIndex].messages = (messages as ChatMessage[]).map((msg: ChatMessage) => ({
-        ...msg,
-        timestamp: new Date(),
-      }));
+      chat.messages = (messages as ChatMessage[]).map((msg: ChatMessage) => {
+        const base: ChatMessage = {
+          role: msg.role,
+          content: msg.content,
+          timestamp: new Date(),
+        };
+        const optionals: Partial<ChatMessage> = {
+          ...(msg.model !== undefined ? { model: msg.model } : {}),
+          ...(msg.type !== undefined ? { type: msg.type } : {}),
+          ...(msg.imageUrl !== undefined ? { imageUrl: msg.imageUrl } : {}),
+          ...(msg.audioUrl !== undefined ? { audioUrl: msg.audioUrl } : {}),
+        };
+        return { ...base, ...optionals } as ChatMessage;
+      });
     }
-    user.savedChats[chatIndex].updatedAt = new Date();
+    chat.updatedAt = new Date();
 
     await user.save();
 
@@ -437,13 +460,13 @@ router.delete('/chats/:chatId', requireAuth, async (req: Request, res: Response)
 // Search chats
 router.get('/chats/search/:query', requireAuth, async (req: Request, res: Response) => {
   try {
-    const { query } = req.params;
+    const { query } = req.params as { query?: string };
     const user = await User.findById(req.userId);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const searchQuery = query.toLowerCase();
+    const searchQuery = (query || '').toLowerCase();
     const filteredChats = user.savedChats.filter(chat => 
       chat.title.toLowerCase().includes(searchQuery) ||
       chat.messages.some(msg => 
