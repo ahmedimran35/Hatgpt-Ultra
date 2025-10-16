@@ -1559,10 +1559,10 @@ export default function AppShell() {
                 <div className="flex items-center gap-3">
                   <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/70 px-3 py-1.5 text-sm text-gray-700 shadow-sm">
                     <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
-                    <span className="font-semibold">{user.monthlyTokens.toLocaleString()}</span>
+                    <span className="font-semibold">{(user?.monthlyTokens ?? 0).toLocaleString()}</span>
                     <span className="text-gray-500">this month</span>
                     <span className="text-gray-300">•</span>
-                    <span className="text-xs text-gray-500">Reset {new Date(user.lastTokenReset).toLocaleDateString()}</span>
+                    <span className="text-xs text-gray-500">Reset {new Date(user?.lastTokenReset ?? Date.now()).toLocaleDateString()}</span>
                   </div>
                   <button
                     onClick={() => setSidebarOpen(!sidebarOpen)}

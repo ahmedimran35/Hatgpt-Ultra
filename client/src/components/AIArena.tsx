@@ -341,7 +341,7 @@ export default function AIArena() {
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="font-semibold text-gray-900">{result.question}</h3>
                     <span className="text-sm text-gray-500">
-                      {result.createdAt.toLocaleString()}
+                      {new Date(result.createdAt as unknown as string | number | Date).toLocaleString()}
                     </span>
                   </div>
                   
