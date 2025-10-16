@@ -30,7 +30,7 @@ export default function Login() {
 		<div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 flex flex-col">
 			{/* Navbar */}
 			<header className="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-				<div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+				<div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
 					<Link to="/" className="flex items-center gap-2">
 						<div className="h-9 w-9 rounded-md bg-gradient-to-br from-emerald-400 to-teal-400 flex items-center justify-center text-white font-bold shadow">H</div>
 						<span className="font-semibold text-lg tracking-tight">HatGPT Ultra</span>
@@ -44,8 +44,8 @@ export default function Login() {
 			</header>
 
 			{/* Sign-In Form */}
-			<div className="flex-grow flex items-center justify-center px-6">
-				<FadeInSection className="w-full max-w-md bg-white rounded-3xl shadow-lg border border-gray-100 p-8 mt-10 mb-16">
+			<div className="flex-grow flex items-center justify-center px-4 sm:px-6">
+				<FadeInSection className="w-full max-w-md bg-white rounded-3xl shadow-lg border border-gray-100 p-6 sm:p-8 mt-10 mb-16">
 					<div className="text-center mb-8">
 						<div className="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-400 text-white font-bold text-lg mb-4">H</div>
 						<h1 className="text-2xl font-bold text-gray-900">Welcome Back to HatGPT Ultra</h1>

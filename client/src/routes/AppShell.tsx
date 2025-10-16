@@ -1484,7 +1484,7 @@ export default function AppShell() {
     <div className="h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 flex flex-col overflow-y-auto">
       {/* Header */}
       <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200 flex-shrink-0 shadow-sm">
-        <div className="mx-auto max-w-7xl px-6 py-4">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
