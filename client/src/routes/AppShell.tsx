@@ -157,6 +157,7 @@ export default function AppShell() {
   const recognitionRef = useRef<any>(null);
   const transcriptBufferRef = useRef<string>('');
   const [modeMenuOpen, setModeMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [, setIsAnalyzing] = useState(false);
   const [, setAnalysis] = useState<string>('');
   const [, setSelectedModel] = useState<string>('');
@@ -1577,7 +1578,7 @@ export default function AppShell() {
             </div>
             <div className="flex items-center gap-4">
               {user ? (
-                <div className="flex items-center gap-3">
+                <div className="items-center gap-3 hidden md:flex">
                   <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/70 px-3 py-1.5 text-sm text-gray-700 shadow-sm">
                     <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
                     <span className="font-semibold">{(user?.monthlyTokens ?? 0).toLocaleString()}</span>
@@ -1639,6 +1640,30 @@ export default function AppShell() {
                   >
                     🚪 Logout
                   </Button>
+                </div>
+              )}
+
+              {/* Mobile user menu (3 dots) */}
+              {user && (
+                <div className="relative md:hidden">
+                  <button
+                    onClick={() => setUserMenuOpen(v => !v)}
+                    aria-label="Open user menu"
+                    className="p-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 active:bg-gray-100"
+                  >
+                    <span className="inline-block w-1 h-1 bg-gray-700 rounded-full" />
+                    <span className="inline-block w-1 h-1 bg-gray-700 rounded-full mx-1" />
+                    <span className="inline-block w-1 h-1 bg-gray-700 rounded-full" />
+                  </button>
+                  {userMenuOpen && (
+                    <div className="absolute right-0 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg py-2 z-50">
+                      <button onClick={() => { setShowChatHistory(true); setUserMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">📚 History</button>
+                      <button onClick={() => { setSidebarOpen(true); setUserMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">👤 Profile</button>
+                      <div className="px-4 py-2 text-sm text-gray-600">🔋 Tokens: {(user?.monthlyTokens ?? 0).toLocaleString()}</div>
+                      <div className="my-1 border-t border-gray-200"></div>
+                      <button onClick={() => { localStorage.removeItem('token'); window.location.href = '/login'; }} className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">🚪 Logout</button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
