@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Button from '../components/Button';
 import { Card, CardBody, CardHeader } from '../components/Card';
-import axios from 'axios';
+import axios from '../config/axios';
 import SmartAnswer from '../components/SmartAnswer';
 import AIArena from '../components/AIArena';
 import CommunityArena from '../components/CommunityArena';

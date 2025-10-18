@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Button from './Button';
 import { Card, CardBody, CardHeader } from './Card';
-import axios from 'axios';
+import axios from '../config/axios';
 
 interface CommunityBattle {
   id: string;
