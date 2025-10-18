@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Button from '../components/Button';
-import { Card, CardBody, CardHeader } from '../components/Card';
 import axios from '../config/axios';
 import SmartAnswer from '../components/SmartAnswer';
 import AIArena from '../components/AIArena';
 import CommunityArena from '../components/CommunityArena';
+import ToolsPage from '../components/ToolsPage';
 
 // Types for chat history
 interface ChatMessage {
@@ -132,7 +132,7 @@ type User = {
 };
 
 export default function AppShell() {
-  const [mode, setMode] = useState<'single' | 'compare' | 'smart' | 'arena' | 'community'>('single');
+  const [mode, setMode] = useState<'single' | 'compare' | 'smart' | 'arena' | 'tools' | 'community'>('single');
   const [selectedModels, setSelectedModels] = useState<string[]>(['gpt-5-nano']);
   const [prompt, setPrompt] = useState('');
   const [generationType, setGenerationType] = useState<'text' | 'image' | 'audio'>('text');
@@ -1506,164 +1506,221 @@ export default function AppShell() {
   return (
     <div className="h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 flex flex-col overflow-y-auto">
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200 flex-shrink-0 shadow-sm sticky top-0 z-[200]">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 py-4">
+      <div className="bg-white/90 backdrop-blur-xl border-b border-white/20 flex-shrink-0 shadow-lg sticky top-0 z-[200]">
+        <div className="mx-auto max-w-7xl px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-md bg-gradient-to-br from-emerald-400 to-teal-400 flex items-center justify-center text-white font-bold shadow">H</div>
-                <span className="font-semibold text-gray-900">HatGPT Ultra</span>
+            <div className="flex items-center gap-2 sm:gap-4 lg:gap-6 min-w-0 flex-1">
+              <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                <div className="relative flex-shrink-0">
+                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold shadow-xl">
+                    H
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl blur-sm opacity-30"></div>
+                </div>
+                <span className="font-bold text-lg sm:text-xl tracking-tight bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent truncate">HatGPT Ultra</span>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowChatHistory(true)}
-                  className="ml-2 hidden md:inline-flex rounded-full px-3 py-1.5 text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200"
+                  className="ml-1 hidden lg:inline-flex rounded-full px-3 py-1.5 text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 transition-all duration-300 font-medium"
                 >
-                  <span className="mr-1">📚</span>
-                  <span className="text-sm font-medium">History</span>
-                  <span className="ml-1 text-xs text-emerald-600">(Auto-saved)</span>
+                  <span className="mr-1 text-sm">📚</span>
+                  <span className="text-xs font-semibold">History</span>
+                  <span className="ml-1 text-xs text-emerald-600 font-medium">(Auto)</span>
                 </Button>
               </div>
-              <div className="flex items-center gap-3 overflow-x-auto no-scrollbar">
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-200">
-                  Mode
+              <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto no-scrollbar min-w-0 flex-1">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100/80 backdrop-blur-sm px-2 py-1 text-xs font-semibold text-emerald-700 border border-emerald-200/50 flex-shrink-0">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                  <span className="hidden sm:inline">Mode</span>
                 </span>
-                <div className="hidden md:inline-flex items-center gap-1 p-1 bg-gray-100 rounded-lg min-w-max">
+                <div className="hidden lg:inline-flex items-center gap-1.5 p-1 bg-white/70 backdrop-blur-sm rounded-2xl border border-white/20 shadow-lg min-w-max">
                   <Button 
                     variant={mode === 'single' ? 'primary' : 'ghost'} 
                     size="sm" 
                     onClick={() => setMode('single')}
-                    className={`${mode === 'single' ? 'rounded-lg shadow-sm bg-emerald-500 text-white' : 'rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-200'} px-4 py-1.5 transition-all duration-200`}
+                    className={`${mode === 'single' ? 'rounded-xl shadow-lg bg-gradient-to-r from-emerald-500 to-teal-600 text-white' : 'rounded-xl text-gray-600 hover:text-emerald-600 hover:bg-emerald-50'} px-3 py-1.5 transition-all duration-300 font-semibold`}
                   >
-                    <span className="mr-1">💬</span>
-                    <span className="text-sm font-medium">Single</span>
+                    <span className="mr-1 text-sm">💬</span>
+                    <span className="text-xs font-semibold">Single</span>
                   </Button>
                   <Button 
                     variant={mode === 'compare' ? 'primary' : 'ghost'} 
                     size="sm" 
                     onClick={() => setMode('compare')}
-                    className={`${mode === 'compare' ? 'rounded-lg shadow-sm bg-emerald-500 text-white' : 'rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-200'} px-4 py-1.5 transition-all duration-200`}
+                    className={`${mode === 'compare' ? 'rounded-xl shadow-lg bg-gradient-to-r from-emerald-500 to-teal-600 text-white' : 'rounded-xl text-gray-600 hover:text-emerald-600 hover:bg-emerald-50'} px-3 py-1.5 transition-all duration-300 font-semibold`}
                   >
-                    <span className="mr-1">⚖️</span>
-                    <span className="text-sm font-medium">Compare</span>
+                    <span className="mr-1 text-sm">⚖️</span>
+                    <span className="text-xs font-semibold">Compare</span>
                   </Button>
                   <Button 
                     variant={mode === 'smart' ? 'primary' : 'ghost'} 
                     size="sm" 
                     onClick={() => setMode('smart')}
-                    className={`${mode === 'smart' ? 'rounded-lg shadow-sm bg-emerald-500 text-white' : 'rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-200'} px-4 py-1.5 transition-all duration-200`}
+                    className={`${mode === 'smart' ? 'rounded-xl shadow-lg bg-gradient-to-r from-emerald-500 to-teal-600 text-white' : 'rounded-xl text-gray-600 hover:text-emerald-600 hover:bg-emerald-50'} px-3 py-1.5 transition-all duration-300 font-semibold`}
                   >
-                    <span className="mr-1">🧠</span>
-                    <span className="text-sm font-medium">Smart</span>
+                    <span className="mr-1 text-sm">🧠</span>
+                    <span className="text-xs font-semibold">Smart</span>
                   </Button>
                   <Button 
                     variant={mode === 'arena' ? 'primary' : 'ghost'} 
                     size="sm" 
                     onClick={() => setMode('arena')}
-                    className={`${mode === 'arena' ? 'rounded-lg shadow-sm bg-red-500 text-white' : 'rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-200'} px-4 py-1.5 transition-all duration-200`}
+                    className={`${mode === 'arena' ? 'rounded-xl shadow-lg bg-gradient-to-r from-red-500 to-pink-600 text-white' : 'rounded-xl text-gray-600 hover:text-red-600 hover:bg-red-50'} px-3 py-1.5 transition-all duration-300 font-semibold`}
                   >
-                    <span className="mr-1">🥊</span>
-                    <span className="text-sm font-medium">Arena</span>
+                    <span className="mr-1 text-sm">🥊</span>
+                    <span className="text-xs font-semibold">Arena</span>
+                  </Button>
+                  <Button 
+                    variant={mode === 'tools' ? 'primary' : 'ghost'} 
+                    size="sm" 
+                    onClick={() => setMode('tools')}
+                    className={`${mode === 'tools' ? 'rounded-xl shadow-lg bg-gradient-to-r from-purple-500 to-indigo-600 text-white' : 'rounded-xl text-gray-600 hover:text-purple-600 hover:bg-purple-50'} px-3 py-1.5 transition-all duration-300 font-semibold`}
+                  >
+                    <span className="mr-1 text-sm">🛠️</span>
+                    <span className="text-xs font-semibold">Tools</span>
                   </Button>
                   <Button 
                     variant={mode === 'community' ? 'primary' : 'ghost'} 
                     size="sm" 
                     onClick={() => setMode('community')}
-                    className={`${mode === 'community' ? 'rounded-lg shadow-sm bg-purple-500 text-white' : 'rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-200'} px-4 py-1.5 transition-all duration-200`}
+                    className={`${mode === 'community' ? 'rounded-xl shadow-lg bg-gradient-to-r from-purple-500 to-indigo-600 text-white' : 'rounded-xl text-gray-600 hover:text-purple-600 hover:bg-purple-50'} px-3 py-1.5 transition-all duration-300 font-semibold`}
                   >
-                    <span className="mr-1">🌍</span>
-                    <span className="text-sm font-medium">Community</span>
+                    <span className="mr-1 text-sm">🌍</span>
+                    <span className="text-xs font-semibold">Community</span>
                   </Button>
                 </div>
                 <div className="hidden" />
               </div>
             </div>
-            <div className="flex items-center gap-1 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
               {user ? (
-                <div className="flex items-center gap-1 sm:gap-2">
+                <div className="flex items-center gap-2">
                   {/* Token Counter - Compact Mobile Design */}
-                  <div className="flex items-center gap-1 rounded-full border border-gray-200 bg-white/70 px-2 py-1 text-xs text-gray-700 shadow-sm">
-                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                    <span className="font-semibold">{(user?.monthlyTokens ?? 0).toLocaleString()}</span>
-                    <button 
-                      onClick={refreshUserData}
-                      className="text-gray-400 hover:text-gray-600 transition-colors text-xs"
-                      title="Refresh"
-                    >
-                      🔄
-                    </button>
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl blur-sm opacity-75"></div>
+                    <div className="relative flex items-center gap-1.5 rounded-xl border border-white/20 bg-white/80 backdrop-blur-xl px-2.5 py-1.5 shadow-lg">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                      <span className="text-xs font-bold text-gray-800">{(user?.monthlyTokens ?? 0).toLocaleString()}</span>
+                      <button 
+                        onClick={refreshUserData}
+                        className="text-gray-400 hover:text-emerald-600 transition-colors text-xs hover:scale-110 transform duration-200"
+                        title="Refresh"
+                      >
+                        🔄
+                      </button>
+                    </div>
                   </div>
                   
-                  {/* User Avatar - Opens Profile Menu */}
+                  {/* User Avatar - Compact Design */}
                   <button
                     onClick={() => setSidebarOpen(!sidebarOpen)}
-                    className="flex items-center rounded-full border border-gray-200 bg-white/70 p-1.5 text-gray-700 shadow-sm hover:bg-white hover:shadow-md transition-all duration-200"
+                    className="relative group"
                     title="Profile & Settings"
                   >
-                    <div className="h-5 w-5 rounded-full bg-gradient-to-br from-emerald-400 to-teal-400 flex items-center justify-center text-white font-bold text-xs">
-                      {(user?.username?.charAt(0)?.toUpperCase() ?? 'U')}
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl blur-sm opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="relative flex items-center gap-2 rounded-xl border border-white/20 bg-white/80 backdrop-blur-xl px-2.5 py-1.5 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+                      <div className="h-6 w-6 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-xs shadow-lg">
+                        {(user?.username?.charAt(0)?.toUpperCase() ?? 'U')}
+                      </div>
+                      <div className="hidden sm:flex flex-col items-start">
+                        <span className="text-xs font-bold text-gray-900 truncate max-w-20">{user?.username ?? 'User'}</span>
+                        <span className="text-xs text-gray-600 font-medium">Profile</span>
+                      </div>
                     </div>
                   </button>
                 </div>
               ) : (
-                <div className="flex items-center gap-3">
-                  <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/70 px-3 py-1.5 text-sm text-gray-600 shadow-sm">
-                    <span className="inline-block h-2 w-2 rounded-full bg-gray-400" />
-                    <span className="font-semibold">0</span>
-                    <span className="text-gray-500">this month</span>
+                <div className="flex items-center gap-2">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-gray-400 to-gray-500 rounded-xl blur-sm opacity-75"></div>
+                    <div className="relative flex items-center gap-1.5 rounded-xl border border-white/20 bg-white/80 backdrop-blur-xl px-2.5 py-1.5 shadow-lg">
+                      <div className="w-1.5 h-1.5 rounded-full bg-gray-400"></div>
+                      <span className="text-xs font-bold text-gray-800">0</span>
+                    </div>
                   </div>
                   <button
                     onClick={() => setSidebarOpen(!sidebarOpen)}
-                    className="flex items-center gap-2 rounded-full border border-gray-200 bg-white/70 px-3 py-1.5 text-sm text-gray-700 shadow-sm hover:bg-white hover:shadow-md transition-all duration-200"
+                    className="relative group"
                   >
-                    <div className="h-6 w-6 rounded-full bg-gradient-to-br from-emerald-400 to-teal-400 flex items-center justify-center text-white font-bold text-xs">
-                      ?
-                    </div>
-                    <div className="flex flex-col items-start">
-                      <span className="text-sm font-medium text-gray-900">Guest</span>
-                      <span className="text-xs text-gray-500">Anonymous</span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl blur-sm opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="relative flex items-center gap-2 rounded-xl border border-white/20 bg-white/80 backdrop-blur-xl px-2.5 py-1.5 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+                      <div className="h-6 w-6 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-xs shadow-lg">
+                        ?
+                      </div>
+                      <div className="hidden sm:flex flex-col items-start">
+                        <span className="text-xs font-bold text-gray-900">Guest</span>
+                        <span className="text-xs text-gray-600 font-medium">Anonymous</span>
+                      </div>
                     </div>
                   </button>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="rounded-full px-3 py-1.5 text-red-600 hover:text-red-700 hover:bg-red-50 transition-all duration-200"
+                    className="relative group"
                     onClick={() => {
                       localStorage.removeItem('token');
                       window.location.href = '/login';
                     }}
                   >
-                    🚪 Logout
+                    <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-pink-600 rounded-xl blur-sm opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="relative px-2.5 py-1.5 text-red-600 hover:text-white rounded-xl font-semibold transition-all duration-300 group-hover:scale-105 text-xs">
+                      🚪
+                    </div>
                   </Button>
                 </div>
               )}
 
-              {/* Mobile user menu (3 dots) */}
+              {/* Mobile user menu (hamburger) */}
               {user && (
-                <div className="relative md:hidden">
+                <div className="relative lg:hidden">
                   <button
                     onClick={() => setUserMenuOpen(v => !v)}
                     aria-label="Open user menu"
-                    className="p-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 active:bg-gray-100"
+                    className="relative group p-1.5 rounded-lg border border-white/20 bg-white/70 backdrop-blur-xl text-gray-700 hover:bg-white/90 hover:shadow-lg transition-all duration-300"
                   >
-                    <span className="inline-block w-1 h-1 bg-gray-700 rounded-full" />
-                    <span className="inline-block w-1 h-1 bg-gray-700 rounded-full mx-1" />
-                    <span className="inline-block w-1 h-1 bg-gray-700 rounded-full" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-lg blur-sm opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="relative">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                      </svg>
+                    </div>
                   </button>
                   {userMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-56 rounded-lg border border-gray-200 bg-white shadow-lg py-2 z-[260]">
-                      <div className="px-2 pb-1 text-xs font-semibold text-gray-500">Switch mode</div>
-                      <button onClick={() => { setMode('single'); setUserMenuOpen(false); }} className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${mode==='single'?'text-emerald-600 font-medium':''}`}>💬 Single</button>
-                      <button onClick={() => { setMode('compare'); setUserMenuOpen(false); }} className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${mode==='compare'?'text-emerald-600 font-medium':''}`}>⚖️ Compare</button>
-                      <button onClick={() => { setMode('smart'); setUserMenuOpen(false); }} className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${mode==='smart'?'text-emerald-600 font-medium':''}`}>🧠 Smart</button>
-                      <button onClick={() => { setMode('arena'); setUserMenuOpen(false); }} className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${mode==='arena'?'text-emerald-600 font-medium':''}`}>🥊 Arena</button>
-                      <button onClick={() => { setMode('community'); setUserMenuOpen(false); }} className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${mode==='community'?'text-emerald-600 font-medium':''}`}>🌍 Community</button>
-                      <div className="my-2 border-t border-gray-200" />
-                      <button onClick={() => { setShowChatHistory(true); setUserMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">📚 History</button>
-                      <button onClick={() => { setSidebarOpen(true); setUserMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">👤 Profile</button>
-                      <div className="px-4 py-2 text-sm text-gray-600">🔋 Tokens: {(user?.monthlyTokens ?? 0).toLocaleString()}</div>
-                      <div className="my-1 border-t border-gray-200"></div>
-                      <button onClick={() => { localStorage.removeItem('token'); window.location.href = '/login'; }} className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">🚪 Logout</button>
+                    <div className="absolute right-0 mt-2 w-56 rounded-xl border border-white/20 bg-white/90 backdrop-blur-xl shadow-2xl py-3 z-[260]">
+                      <div className="px-3 pb-2 text-xs font-bold text-emerald-700 uppercase tracking-wide">Switch Mode</div>
+                      <button onClick={() => { setMode('single'); setUserMenuOpen(false); }} className={`block w-full text-left px-3 py-2 text-sm font-semibold hover:bg-emerald-50 transition-colors duration-300 ${mode==='single'?'text-emerald-600 bg-emerald-50':''}`}>
+                        <span className="mr-2 text-sm">💬</span>Single Chat
+                      </button>
+                      <button onClick={() => { setMode('compare'); setUserMenuOpen(false); }} className={`block w-full text-left px-3 py-2 text-sm font-semibold hover:bg-emerald-50 transition-colors duration-300 ${mode==='compare'?'text-emerald-600 bg-emerald-50':''}`}>
+                        <span className="mr-2 text-sm">⚖️</span>Compare
+                      </button>
+                      <button onClick={() => { setMode('smart'); setUserMenuOpen(false); }} className={`block w-full text-left px-3 py-2 text-sm font-semibold hover:bg-emerald-50 transition-colors duration-300 ${mode==='smart'?'text-emerald-600 bg-emerald-50':''}`}>
+                        <span className="mr-2 text-sm">🧠</span>Smart
+                      </button>
+                      <button onClick={() => { setMode('arena'); setUserMenuOpen(false); }} className={`block w-full text-left px-3 py-2 text-sm font-semibold hover:bg-red-50 transition-colors duration-300 ${mode==='arena'?'text-red-600 bg-red-50':''}`}>
+                        <span className="mr-2 text-sm">🥊</span>Arena
+                      </button>
+                      <button onClick={() => { setMode('tools'); setUserMenuOpen(false); }} className={`block w-full text-left px-3 py-2 text-sm font-semibold hover:bg-purple-50 transition-colors duration-300 ${mode==='tools'?'text-purple-600 bg-purple-50':''}`}>
+                        <span className="mr-2 text-sm">🛠️</span>Tools
+                      </button>
+                      <button onClick={() => { setMode('community'); setUserMenuOpen(false); }} className={`block w-full text-left px-3 py-2 text-sm font-semibold hover:bg-purple-50 transition-colors duration-300 ${mode==='community'?'text-purple-600 bg-purple-50':''}`}>
+                        <span className="mr-2 text-sm">🌍</span>Community
+                      </button>
+                      <div className="my-2 border-t border-gray-200"></div>
+                      <button onClick={() => { setShowChatHistory(true); setUserMenuOpen(false); }} className="block w-full text-left px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-emerald-50 transition-colors duration-300">
+                        <span className="mr-2 text-sm">📚</span>History
+                      </button>
+                      <button onClick={() => { setSidebarOpen(true); setUserMenuOpen(false); }} className="block w-full text-left px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-emerald-50 transition-colors duration-300">
+                        <span className="mr-2 text-sm">👤</span>Profile
+                      </button>
+                      <div className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 rounded-lg mx-2">
+                        <span className="mr-1">🔋</span>Tokens: {(user?.monthlyTokens ?? 0).toLocaleString()}
+                      </div>
+                      <div className="my-2 border-t border-gray-200"></div>
+                      <button onClick={() => { localStorage.removeItem('token'); window.location.href = '/login'; }} className="block w-full text-left px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors duration-300">
+                        <span className="mr-2 text-sm">🚪</span>Logout
+                      </button>
                     </div>
                   )}
                 </div>
@@ -1674,7 +1731,7 @@ export default function AppShell() {
       </div>
 
       {/* Model Selection - Compact */}
-      {mode !== 'smart' && mode !== 'arena' && mode !== 'community' && (
+      {mode !== 'smart' && mode !== 'arena' && mode !== 'tools' && mode !== 'community' && (
       <div className="bg-white/60 backdrop-blur-sm border-b border-gray-200/30 flex-shrink-0">
         <div className="mx-auto max-w-7xl px-6 py-3">
           {mode === 'single' ? (
@@ -1957,265 +2014,112 @@ export default function AppShell() {
         <div className="h-full p-4 min-h-0">
         {/* Chat Interface */}
         {mode === 'single' ? (
-          <div className="h-full max-w-5xl mx-auto min-h-0">
-            <Card className="flex flex-col h-full min-h-0 border-0 shadow-2xl bg-white/95 backdrop-blur-sm rounded-3xl overflow-hidden">
-              <CardHeader className="flex flex-row items-center justify-between p-6 border-b border-gray-200/50 flex-shrink-0 bg-gradient-to-r from-white/95 to-emerald-50/30 backdrop-blur-sm">
-                <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-400 flex items-center justify-center shadow-lg">
-                    <div className="h-4 w-4 rounded bg-white/90" />
+          <div className="h-full overflow-y-auto bg-gradient-to-br from-slate-50 via-purple-50 to-pink-100">
+            <div className="max-w-6xl mx-auto p-4">
+              {/* Hero Header */}
+              <div className="relative overflow-hidden mb-4">
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 via-pink-600/10 to-rose-600/10"></div>
+                <div className="relative text-center py-6">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm border border-white/20 shadow-lg mb-3">
+                    <div className="w-2 h-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 animate-pulse"></div>
+                    <span className="text-xs font-semibold text-gray-700">AI Chat Assistant</span>
                   </div>
-                  <div>
-                    <div className="flex items-center gap-3">
-                      <span className="font-bold text-gray-900 text-lg">
-                        {generationType === 'image' 
-                          ? IMAGE_MODELS.find(x => x.id === selectedImageModel)?.label || selectedImageModel
-                          : generationType === 'audio'
-                          ? AUDIO_VOICES.find(x => x.id === selectedAudioVoice)?.label || selectedAudioVoice
-                          : ALL_MODELS.find(x => x.id === activeModel)?.label || activeModel
-                        }
-                      </span>
-                      {((generationType === 'text' && streamingModels.has(activeModel)) || 
-                        (generationType === 'image' && isSending) || 
-                        (generationType === 'audio' && isSending)) && (
-                        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 border border-emerald-200">
-                          <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                          <span className="text-xs text-emerald-700 font-medium">
-                            {generationType === 'image' ? 'Generating...' : generationType === 'audio' ? 'Generating...' : 'Typing...'}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="text-sm text-gray-500 mt-1">AI Assistant</div>
-                  </div>
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 via-purple-900 to-pink-900 bg-clip-text text-transparent mb-2">
+                    Single Chat
+                  </h1>
+                  <p className="text-sm text-gray-600 max-w-xl mx-auto">
+                    Chat with your AI assistant one-on-one. Get personalized responses tailored to your needs!
+                  </p>
                 </div>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => clearChat()}
-                  className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200"
-                >
-                  🗑️ Clear
-                </Button>
-              </CardHeader>
-              <CardBody className="flex-1 p-0 overflow-hidden min-h-0">
-                <div 
-                  ref={listRef} 
-                  className="space-y-4 overflow-y-auto h-full p-6 overscroll-contain touch-pan-y scrollbar-thin scrollbar-thumb-emerald-200 scrollbar-track-transparent"
-                >
-                  {singleVisibleMessages.length === 0 ? (
-                    <div className="flex items-center justify-center h-full text-center">
-                      <div className="space-y-6">
-                        <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-100 mx-auto flex items-center justify-center shadow-lg">
-                          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-400" />
+              </div>
+
+              {/* Main Chat Container */}
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-600 rounded-3xl blur-lg opacity-20"></div>
+                <div className="relative bg-white/90 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl overflow-hidden">
+                  {/* Chat Header */}
+                  <div className="bg-gradient-to-r from-purple-500 to-pink-600 p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
+                          <span className="text-2xl">💬</span>
                         </div>
-                        <div className="space-y-2">
-                          <h3 className="text-2xl font-bold text-gray-900">Start a conversation</h3>
-                          <p className="text-gray-600 max-w-md mx-auto">Type your message below to begin chatting with your AI assistant. Ask questions, get help, or explore ideas!</p>
-                        </div>
-                        <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
-                          <div className="h-1 w-1 rounded-full bg-emerald-400"></div>
-                          <div className="h-1 w-1 rounded-full bg-teal-400"></div>
-                          <div className="h-1 w-1 rounded-full bg-emerald-400"></div>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <>
-                      {singleVisibleMessages.map((msg, idx) => (
-                        <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                          <div className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                            msg.role === 'user' 
-                              ? 'bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg' 
-                              : 'bg-gradient-to-br from-gray-50 to-white border border-gray-200 text-gray-900 shadow-sm'
-                          }`}>
-                            <div className="text-sm leading-relaxed whitespace-pre-wrap">
-                              {msg.text}
-                              {msg.isStreaming && (
-                                <span className="inline-block w-2 h-4 bg-emerald-500 ml-1 animate-pulse" />
-                              )}
-                              {msg.text.includes('Error: Failed to get response') && (
-                                <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
-                                  <div className="flex items-center gap-2 text-red-600">
-                                    <span className="text-sm">⚠️</span>
-                                    <span className="text-sm font-medium">Connection issue - please try again</span>
-                                  </div>
-                                </div>
-                              )}
-                              {msg.type === 'image' && msg.content && (
-                                <div className="mt-3">
-                                  <img 
-                                    src={msg.content} 
-                                    alt="Generated image" 
-                                    className="max-w-full h-auto rounded-lg shadow-sm border border-slate-200"
-                                    onError={(e) => {
-                                      console.error('Image failed to load:', msg.content);
-                                      e.currentTarget.style.display = 'none';
-                                      // Show fallback message
-                                      const fallback = document.createElement('div');
-                                      fallback.className = 'p-4 bg-slate-100 rounded-lg border border-slate-200 text-sm text-slate-600';
-                                      fallback.innerHTML = `
-                                        <p>Image failed to load. Try opening the link directly:</p>
-                                        <a href="${msg.content}" target="_blank" rel="noopener noreferrer" class="text-mint-600 hover:text-mint-700 underline">
-                                          ${msg.content}
-                                        </a>
-                                      `;
-                                      e.currentTarget.parentNode?.appendChild(fallback);
-                                    }}
-                                    onLoad={() => {
-                                      console.log('Image loaded successfully:', msg.content);
-                                    }}
-                                  />
-                                  <div className="mt-2 text-xs text-slate-500">
-                                    <a href={msg.content} target="_blank" rel="noopener noreferrer" className="text-mint-600 hover:text-mint-700">
-                                      Open in new tab
-                                    </a>
-                                  </div>
-                                </div>
-                              )}
-                              {msg.type === 'audio' && msg.content && (
-                                <div className="mt-3">
-                                  <audio 
-                                    controls 
-                                    className="w-full max-w-md"
-                                    src={msg.content}
-                                  >
-                                    Your browser does not support the audio element.
-                                  </audio>
-                                </div>
-                              )}
-                            </div>
-                            {msg.role === 'assistant' && (
-                              <div className="flex items-center justify-between mt-2">
-                                <div className="flex items-center gap-2">
-                                  <div className="text-xs text-slate-500 opacity-70">
-                                    {msg.model}
-                                  </div>
-                                  {msg.tokens && (
-                                    <div className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded">
-                                      {msg.tokens} tokens
-                                    </div>
-                                  )}
-                                </div>
-                                {msg.isStreaming && (
-                                  <div className="flex items-center gap-1">
-                                    <div className="h-1.5 w-1.5 rounded-full bg-mint-500 animate-pulse" />
-                                    <span className="text-xs text-mint-600 font-medium">Streaming</span>
-                                  </div>
-                                )}
+                        <div>
+                          <div className="flex items-center gap-3">
+                            <h2 className="text-xl font-bold text-white">
+                              {generationType === 'image' 
+                                ? IMAGE_MODELS.find(x => x.id === selectedImageModel)?.label || selectedImageModel
+                                : generationType === 'audio'
+                                ? AUDIO_VOICES.find(x => x.id === selectedAudioVoice)?.label || selectedAudioVoice
+                                : ALL_MODELS.find(x => x.id === activeModel)?.label || activeModel
+                              }
+                            </h2>
+                            {((generationType === 'text' && streamingModels.has(activeModel)) || 
+                              (generationType === 'image' && isSending) || 
+                              (generationType === 'audio' && isSending)) && (
+                              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 border border-white/30">
+                                <div className="h-2 w-2 rounded-full bg-white animate-pulse" />
+                                <span className="text-xs text-white font-medium">
+                                  {generationType === 'image' ? 'Generating...' : generationType === 'audio' ? 'Generating...' : 'Typing...'}
+                                </span>
                               </div>
                             )}
                           </div>
+                          <p className="text-purple-100 text-sm">AI Assistant</p>
                         </div>
-                      ))}
-                      {streamingModels.has(activeModel) && singleChatConversation.length > 0 && generationType === 'text' && (
-                        <div className="flex justify-start">
-                          <div className="max-w-[80%] rounded-2xl px-5 py-4 bg-gradient-to-br from-gray-50 to-white border border-gray-200 text-gray-900 shadow-sm">
-                            <div className="flex items-center gap-3">
-                              <div className="flex space-x-1">
-                                <div className="h-2 w-2 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: '0ms' }} />
-                                <div className="h-2 w-2 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: '150ms' }} />
-                                <div className="h-2 w-2 rounded-full bg-emerald-500 animate-bounce" style={{ animationDelay: '300ms' }} />
-                              </div>
-                              <span className="text-sm text-gray-600 font-medium">AI is thinking...</span>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-              </CardBody>
-            </Card>
-          </div>
-        ) : mode === 'smart' ? (
-          <SmartAnswer
-            onSendPrompt={sendPrompt}
-            isSending={isSending}
-            prompt={prompt}
-            setPrompt={setPrompt}
-            messages={smartChatConversation}
-            onSmartSend={handleSmartSend}
-            onClearChat={() => clearChat()}
-          />
-        ) : mode === 'arena' ? (
-          <AIArena />
-        ) : mode === 'community' ? (
-          <CommunityArena />
-        ) : (
-          <div className={`h-full grid gap-6 min-h-0 ${
-            visibleModels.length === 1 ? 'grid-cols-1' :
-            visibleModels.length === 2 ? 'grid-cols-2 lg:grid-cols-2' :
-            visibleModels.length === 3 ? 'grid-cols-2 md:grid-cols-2 lg:grid-cols-3' :
-            visibleModels.length === 4 ? 'grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4' :
-            'grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'
-          }`}>
-            {visibleModels.map((m) => (
-              <div key={m} className="flex flex-col h-full min-h-0">
-                <Card className="flex flex-col h-full min-h-0 border-0 shadow-2xl bg-white/95 backdrop-blur-sm rounded-3xl overflow-hidden">
-                  <CardHeader className="sticky top-0 z-10 flex flex-row items-center justify-between p-6 border-b border-gray-200/50 bg-gradient-to-r from-white/95 to-emerald-50/30 backdrop-blur-sm flex-shrink-0">
-                    <div className="flex items-center gap-4">
-                      <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-400 flex items-center justify-center shadow-lg">
-                        <div className="h-4 w-4 rounded bg-white/90" />
                       </div>
-                      <div>
-                        <div className="flex items-center gap-3">
-                          <span className="font-bold text-gray-900 text-lg">
-                            {ALL_MODELS.find(x => x.id === m)?.label || m}
-                          </span>
-                          {streamingModels.has(m) && (
-                            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 border border-emerald-200">
-                              <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                              <span className="text-xs text-emerald-700 font-medium">Typing...</span>
-                            </div>
-                          )}
-                        </div>
-                        <div className="text-sm text-gray-500 mt-1">AI Assistant</div>
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-gradient-to-r from-gray-500 to-gray-600 rounded-xl blur-sm opacity-75"></div>
+                        <Button 
+                          onClick={() => clearChat()}
+                          className="relative bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-lg transform hover:scale-105 transition-all duration-300"
+                        >
+                          🗑️ Clear
+                        </Button>
                       </div>
                     </div>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => clearChat(m)}
-                      className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200"
-                    >
-                      🗑️ Clear
-                    </Button>
-                  </CardHeader>
-                  <CardBody className="flex-1 p-0 overflow-hidden min-h-0">
+                  </div>
+                  {/* Chat Content */}
+                  <div className="p-6 min-h-[400px]">
                     <div 
-                      ref={(el) => { compareListRefs.current[m] = el; }}
-                      className="space-y-4 overflow-y-auto h-full p-6 overscroll-contain touch-pan-y scrollbar-thin scrollbar-thumb-emerald-200 scrollbar-track-transparent"
+                      ref={listRef} 
+                      className="space-y-6 overflow-y-auto h-full overscroll-contain touch-pan-y scrollbar-thin scrollbar-thumb-purple-200 scrollbar-track-transparent"
                     >
-                      {(compareConversations[m] || []).length === 0 ? (
-                        <div className="flex items-center justify-center h-full text-center">
+                      {singleVisibleMessages.length === 0 ? (
+                        <div className="flex items-center justify-center h-full text-center py-12">
                           <div className="space-y-6">
-                            <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-100 mx-auto flex items-center justify-center shadow-lg">
-                              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-400" />
+                            <div className="relative">
+                              <div className="w-20 h-20 bg-gradient-to-r from-purple-100 to-pink-100 rounded-3xl flex items-center justify-center mx-auto shadow-xl">
+                                <span className="text-3xl">💬</span>
+                              </div>
+                              <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-600 rounded-3xl blur-lg opacity-20"></div>
                             </div>
-                            <div className="space-y-2">
-                              <h3 className="text-2xl font-bold text-gray-900">Start a conversation</h3>
-                              <p className="text-gray-600 max-w-md mx-auto">Type your message below to begin chatting with your AI assistant. Ask questions, get help, or explore ideas!</p>
+                            <div className="space-y-3">
+                              <h3 className="text-2xl font-bold text-gray-800">Start a conversation</h3>
+                              <p className="text-gray-600 max-w-lg mx-auto">
+                                Type your message below to begin chatting with your AI assistant. Ask questions, get help, or explore ideas!
+                              </p>
                             </div>
-                            <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
-                              <div className="h-1 w-1 rounded-full bg-emerald-400"></div>
-                              <div className="h-1 w-1 rounded-full bg-teal-400"></div>
-                              <div className="h-1 w-1 rounded-full bg-emerald-400"></div>
+                            <div className="flex items-center justify-center gap-3">
+                              <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+                              <div className="w-3 h-3 rounded-full bg-pink-500"></div>
+                              <div className="w-3 h-3 rounded-full bg-rose-500"></div>
                             </div>
                           </div>
                         </div>
                       ) : (
                         <>
-                          {(compareConversations[m] || []).map((msg, idx) => (
+                          {singleVisibleMessages.map((msg, idx) => (
                             <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                              <div className={`max-w-[80%] rounded-2xl px-5 py-4 shadow-sm ${
+                              <div className={`max-w-[85%] relative ${
                                 msg.role === 'user' 
-                                  ? 'bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg' 
-                                  : 'bg-gradient-to-br from-gray-50 to-white border border-gray-200 text-gray-900 shadow-sm'
+                                  ? 'bg-gradient-to-br from-purple-500 to-pink-600 text-white shadow-xl rounded-3xl px-6 py-4' 
+                                  : 'bg-gradient-to-br from-gray-50 to-white border border-gray-200 text-gray-900 shadow-lg rounded-3xl px-6 py-4'
                               }`}>
                                 <div className="text-sm leading-relaxed whitespace-pre-wrap">
                                   {msg.text}
                                   {msg.isStreaming && (
-                                    <span className="inline-block w-2 h-4 bg-emerald-500 ml-1 animate-pulse" />
+                                    <span className="inline-block w-2 h-4 bg-purple-500 ml-1 animate-pulse" />
                                   )}
                                   {msg.text.includes('Error: Failed to get response') && (
                                     <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -2269,21 +2173,21 @@ export default function AppShell() {
                                   )}
                                 </div>
                                 {msg.role === 'assistant' && (
-                                  <div className="flex items-center justify-between mt-2">
+                                  <div className="flex items-center justify-between mt-3">
                                     <div className="flex items-center gap-2">
                                       <div className="text-xs text-slate-500 opacity-70">
                                         {msg.model}
                                       </div>
                                       {msg.tokens && (
-                                        <div className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded">
+                                        <div className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-lg">
                                           {msg.tokens} tokens
                                         </div>
                                       )}
                                     </div>
                                     {msg.isStreaming && (
                                       <div className="flex items-center gap-1">
-                                        <div className="h-1.5 w-1.5 rounded-full bg-mint-500 animate-pulse" />
-                                        <span className="text-xs text-mint-600 font-medium">Streaming</span>
+                                        <div className="h-1.5 w-1.5 rounded-full bg-purple-500 animate-pulse" />
+                                        <span className="text-xs text-purple-600 font-medium">Streaming</span>
                                       </div>
                                     )}
                                   </div>
@@ -2291,16 +2195,16 @@ export default function AppShell() {
                               </div>
                             </div>
                           ))}
-                          {streamingModels.has(m) && (compareConversations[m] || []).length > 0 && (
+                          {streamingModels.has(activeModel) && singleChatConversation.length > 0 && generationType === 'text' && (
                             <div className="flex justify-start">
-                              <div className="max-w-[80%] rounded-2xl px-4 py-3 bg-slate-100 text-slate-800 border border-slate-200">
-                                <div className="flex items-center gap-2">
+                              <div className="max-w-[85%] rounded-3xl px-6 py-4 bg-gradient-to-br from-gray-50 to-white border border-gray-200 text-gray-900 shadow-lg">
+                                <div className="flex items-center gap-3">
                                   <div className="flex space-x-1">
-                                    <div className="h-2 w-2 rounded-full bg-mint-500 animate-bounce" style={{ animationDelay: '0ms' }} />
-                                    <div className="h-2 w-2 rounded-full bg-mint-500 animate-bounce" style={{ animationDelay: '150ms' }} />
-                                    <div className="h-2 w-2 rounded-full bg-mint-500 animate-bounce" style={{ animationDelay: '300ms' }} />
+                                    <div className="h-2 w-2 rounded-full bg-purple-500 animate-bounce" style={{ animationDelay: '0ms' }} />
+                                    <div className="h-2 w-2 rounded-full bg-purple-500 animate-bounce" style={{ animationDelay: '150ms' }} />
+                                    <div className="h-2 w-2 rounded-full bg-purple-500 animate-bounce" style={{ animationDelay: '300ms' }} />
                                   </div>
-                                  <span className="text-sm text-slate-600">AI is thinking...</span>
+                                  <span className="text-sm text-gray-600 font-medium">AI is thinking...</span>
                                 </div>
                               </div>
                             </div>
@@ -2308,17 +2212,238 @@ export default function AppShell() {
                         </>
                       )}
                     </div>
-                  </CardBody>
-                </Card>
+                  </div>
+                </div>
               </div>
-            ))}
+            </div>
+          </div>
+        ) : mode === 'smart' ? (
+          <SmartAnswer
+            onSendPrompt={sendPrompt}
+            isSending={isSending}
+            prompt={prompt}
+            setPrompt={setPrompt}
+            messages={smartChatConversation}
+            onSmartSend={handleSmartSend}
+            onClearChat={() => clearChat()}
+          />
+        ) : mode === 'arena' ? (
+          <AIArena />
+        ) : mode === 'tools' ? (
+          <ToolsPage />
+        ) : mode === 'community' ? (
+          <CommunityArena />
+        ) : (
+          <div className="h-full overflow-y-auto bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+            <div className="max-w-7xl mx-auto p-4">
+              {/* Hero Header */}
+              <div className="relative overflow-hidden mb-4">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-indigo-600/10 to-purple-600/10"></div>
+                <div className="relative text-center py-6">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm border border-white/20 shadow-lg mb-3">
+                    <div className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 animate-pulse"></div>
+                    <span className="text-xs font-semibold text-gray-700">AI Model Comparison</span>
+                  </div>
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-2">
+                    Compare AI Models
+                  </h1>
+                  <p className="text-sm text-gray-600 max-w-xl mx-auto">
+                    Compare responses from multiple AI models side-by-side to find the best answer for your needs!
+                  </p>
+                </div>
+              </div>
+
+              {/* Models Grid */}
+              <div className={`grid gap-6 ${
+                visibleModels.length === 1 ? 'grid-cols-1' :
+                visibleModels.length === 2 ? 'grid-cols-1 lg:grid-cols-2' :
+                visibleModels.length === 3 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' :
+                visibleModels.length === 4 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4' :
+                'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'
+              }`}>
+                {visibleModels.map((m, index) => (
+                  <div key={m} className="relative group" style={{ animationDelay: `${index * 100}ms` }}>
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-3xl blur-lg opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
+                    <div className="relative bg-white/90 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl overflow-hidden group-hover:shadow-3xl transition-all duration-500 group-hover:scale-[1.02]">
+                      {/* Model Header */}
+                      <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-6">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
+                              <span className="text-2xl">🤖</span>
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-3">
+                                <h3 className="text-xl font-bold text-white">
+                                  {ALL_MODELS.find(x => x.id === m)?.label || m}
+                                </h3>
+                                {streamingModels.has(m) && (
+                                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 border border-white/30">
+                                    <div className="h-2 w-2 rounded-full bg-white animate-pulse" />
+                                    <span className="text-xs text-white font-medium">Typing...</span>
+                                  </div>
+                                )}
+                              </div>
+                              <p className="text-blue-100 text-sm">AI Assistant</p>
+                            </div>
+                          </div>
+                          <div className="relative">
+                            <div className="absolute inset-0 bg-gradient-to-r from-gray-500 to-gray-600 rounded-xl blur-sm opacity-75"></div>
+                            <Button 
+                              onClick={() => clearChat(m)}
+                              className="relative bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-lg transform hover:scale-105 transition-all duration-300"
+                            >
+                              🗑️ Clear
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                      {/* Chat Content */}
+                      <div className="p-4 min-h-[350px]">
+                        <div 
+                          ref={(el) => { compareListRefs.current[m] = el; }}
+                          className="space-y-4 overflow-y-auto h-full overscroll-contain touch-pan-y scrollbar-thin scrollbar-thumb-blue-200 scrollbar-track-transparent"
+                        >
+                          {(compareConversations[m] || []).length === 0 ? (
+                            <div className="flex items-center justify-center h-full text-center py-10">
+                              <div className="space-y-4">
+                                <div className="relative">
+                                  <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-3xl flex items-center justify-center mx-auto shadow-xl">
+                                    <span className="text-2xl">🤖</span>
+                                  </div>
+                                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-3xl blur-lg opacity-20"></div>
+                                </div>
+                                <div className="space-y-2">
+                                  <h3 className="text-xl font-bold text-gray-800">Start a conversation</h3>
+                                  <p className="text-gray-600 max-w-sm mx-auto text-sm">
+                                    Type your message below to begin chatting with this AI model. Compare responses across different models!
+                                  </p>
+                                </div>
+                                <div className="flex items-center justify-center gap-2">
+                                  <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                                  <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+                                  <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              {(compareConversations[m] || []).map((msg, idx) => (
+                                <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                  <div className={`max-w-[85%] relative ${
+                                    msg.role === 'user' 
+                                      ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-xl rounded-3xl px-6 py-4' 
+                                      : 'bg-gradient-to-br from-gray-50 to-white border border-gray-200 text-gray-900 shadow-lg rounded-3xl px-6 py-4'
+                                  }`}>
+                                    <div className="text-sm leading-relaxed whitespace-pre-wrap">
+                                      {msg.text}
+                                      {msg.isStreaming && (
+                                        <span className="inline-block w-2 h-4 bg-blue-500 ml-1 animate-pulse" />
+                                      )}
+                                      {msg.text.includes('Error: Failed to get response') && (
+                                        <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                                          <div className="flex items-center gap-2 text-red-600">
+                                            <span className="text-sm">⚠️</span>
+                                            <span className="text-sm font-medium">Connection issue - please try again</span>
+                                          </div>
+                                        </div>
+                                      )}
+                                      {msg.type === 'image' && msg.content && (
+                                        <div className="mt-3">
+                                          <img 
+                                            src={msg.content} 
+                                            alt="Generated image" 
+                                            className="max-w-full h-auto rounded-lg shadow-sm border border-slate-200"
+                                            onError={(e) => {
+                                              console.error('Image failed to load:', msg.content);
+                                              e.currentTarget.style.display = 'none';
+                                              // Show fallback message
+                                              const fallback = document.createElement('div');
+                                              fallback.className = 'p-4 bg-slate-100 rounded-lg border border-slate-200 text-sm text-slate-600';
+                                              fallback.innerHTML = `
+                                                <p>Image failed to load. Try opening the link directly:</p>
+                                                <a href="${msg.content}" target="_blank" rel="noopener noreferrer" class="text-mint-600 hover:text-mint-700 underline">
+                                                  ${msg.content}
+                                                </a>
+                                              `;
+                                              e.currentTarget.parentNode?.appendChild(fallback);
+                                            }}
+                                            onLoad={() => {
+                                              console.log('Image loaded successfully:', msg.content);
+                                            }}
+                                          />
+                                          <div className="mt-2 text-xs text-slate-500">
+                                            <a href={msg.content} target="_blank" rel="noopener noreferrer" className="text-mint-600 hover:text-mint-700">
+                                              Open in new tab
+                                            </a>
+                                          </div>
+                                        </div>
+                                      )}
+                                      {msg.type === 'audio' && msg.content && (
+                                        <div className="mt-3">
+                                          <audio 
+                                            controls 
+                                            className="w-full max-w-md"
+                                            src={msg.content}
+                                          >
+                                            Your browser does not support the audio element.
+                                          </audio>
+                                        </div>
+                                      )}
+                                    </div>
+                                    {msg.role === 'assistant' && (
+                                      <div className="flex items-center justify-between mt-3">
+                                        <div className="flex items-center gap-2">
+                                          <div className="text-xs text-slate-500 opacity-70">
+                                            {msg.model}
+                                          </div>
+                                          {msg.tokens && (
+                                            <div className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-lg">
+                                              {msg.tokens} tokens
+                                            </div>
+                                          )}
+                                        </div>
+                                        {msg.isStreaming && (
+                                          <div className="flex items-center gap-1">
+                                            <div className="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse" />
+                                            <span className="text-xs text-blue-600 font-medium">Streaming</span>
+                                          </div>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                              {streamingModels.has(m) && (compareConversations[m] || []).length > 0 && (
+                                <div className="flex justify-start">
+                                  <div className="max-w-[85%] rounded-3xl px-6 py-4 bg-gradient-to-br from-gray-50 to-white border border-gray-200 text-gray-900 shadow-lg">
+                                    <div className="flex items-center gap-3">
+                                      <div className="flex space-x-1">
+                                        <div className="h-2 w-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: '0ms' }} />
+                                        <div className="h-2 w-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: '150ms' }} />
+                                        <div className="h-2 w-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: '300ms' }} />
+                                      </div>
+                                      <span className="text-sm text-gray-600 font-medium">AI is thinking...</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         )}
         </div>
       </div>
 
       {/* Chat Input */}
-      {mode !== 'arena' && mode !== 'community' && (
+      {mode !== 'arena' && mode !== 'tools' && mode !== 'community' && (
       <div className="bg-white/95 backdrop-blur-sm border-t border-gray-200/50 flex-shrink-0">
         <div className="mx-auto max-w-7xl px-4 py-3">
           {/* Generation Type Selector - Only show in single mode */}

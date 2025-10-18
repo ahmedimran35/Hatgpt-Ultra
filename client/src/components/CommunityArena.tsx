@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import Button from './Button';
-import { Card, CardBody, CardHeader } from './Card';
 import axios from '../config/axios';
 
 interface CommunityBattle {
@@ -413,11 +412,19 @@ export default function CommunityArena() {
 
   if (isLoading) {
     return (
-      <div className="max-w-6xl mx-auto p-6">
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading battles...</p>
+      <div className="h-full overflow-y-auto bg-gradient-to-br from-slate-50 via-purple-50 to-pink-100">
+        <div className="max-w-7xl mx-auto p-6">
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center">
+              <div className="relative">
+                <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
+                  <div className="w-8 h-8 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-600 rounded-3xl blur-lg opacity-30"></div>
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">Loading Arena...</h3>
+              <p className="text-gray-600">Preparing epic AI battles for you</p>
+            </div>
           </div>
         </div>
       </div>
@@ -425,368 +432,526 @@ export default function CommunityArena() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-4 sm:p-6 min-h-screen overflow-y-auto">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Community Arena</h1>
-        <p className="text-gray-600">Watch AI models battle it out on various topics</p>
-      </div>
-
-      {/* Error/Success Messages */}
-      {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-800">{error}</p>
-        </div>
-      )}
-      
-      {success && (
-        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-          <p className="text-green-800">{success}</p>
-        </div>
-      )}
-
-      {/* Filter Tabs */}
-      <div className="flex space-x-1 mb-6 bg-gray-100 p-1 rounded-lg w-fit">
-        {[
-          { key: 'all', label: 'All Battles' },
-          { key: 'active', label: 'Active' },
-          { key: 'closed', label: 'Closed' }
-        ].map(({ key, label }) => (
-          <button
-            key={key}
-            onClick={() => setBattleFilter(key as 'all' | 'active' | 'closed')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              battleFilter === key
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-
-      {/* Create Battle Button */}
-      <div className="mb-6">
-        <Button
-          onClick={() => setShowCreateForm(!showCreateForm)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium"
-        >
-          {showCreateForm ? 'Cancel' : 'Create New Battle'}
-        </Button>
-      </div>
-
-      {/* Create Battle Form */}
-      {showCreateForm && (
-        <Card className="mb-8">
-          <CardHeader>
-            <h3 className="text-lg font-semibold">Create New Battle</h3>
-          </CardHeader>
-          <CardBody>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Battle Question
-                </label>
-                <textarea
-                  value={newBattle.question}
-                  onChange={(e) => setNewBattle({ ...newBattle, question: e.target.value })}
-                  placeholder="Enter the question for the AI models to answer..."
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  rows={3}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Model 1
-                  </label>
-                  <select
-                    value={newBattle.model1}
-                    onChange={(e) => setNewBattle({ ...newBattle, model1: e.target.value })}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    {ARENA_MODELS.map(model => (
-                      <option key={model.id} value={model.id}>
-                        {model.icon} {model.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Model 2
-                  </label>
-                  <select
-                    value={newBattle.model2}
-                    onChange={(e) => setNewBattle({ ...newBattle, model2: e.target.value })}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    {ARENA_MODELS.map(model => (
-                      <option key={model.id} value={model.id}>
-                        {model.icon} {model.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Battle Duration (minutes)
-                </label>
-                <select
-                  value={newBattle.duration}
-                  onChange={(e) => setNewBattle({ ...newBattle, duration: parseInt(e.target.value) })}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value={5}>5 minutes</option>
-                  <option value={10}>10 minutes</option>
-                  <option value={15}>15 minutes</option>
-                  <option value={30}>30 minutes</option>
-                  <option value={60}>1 hour</option>
-                  <option value={1440}>24 hours</option>
-                </select>
-              </div>
-
-              <div className="flex justify-end space-x-3">
-                <Button
-                  onClick={() => setShowCreateForm(false)}
-                  className="px-4 py-2 text-gray-600 hover:text-gray-800"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={createBattle}
-                  disabled={isCreating}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg disabled:opacity-50"
-                >
-                  {isCreating ? 'Creating...' : 'Create Battle'}
-                </Button>
-              </div>
+    <div className="h-full overflow-y-auto bg-gradient-to-br from-slate-50 via-purple-50 to-pink-100">
+      <div className="max-w-7xl mx-auto p-6">
+        {/* Hero Header */}
+        <div className="relative overflow-hidden mb-12">
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-600/10 via-pink-600/10 to-blue-600/10"></div>
+          <div className="relative text-center py-16">
+            <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white/80 backdrop-blur-sm border border-white/20 shadow-lg mb-6">
+              <div className="w-3 h-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 animate-pulse"></div>
+              <span className="text-sm font-semibold text-gray-700">AI Battle Arena</span>
             </div>
-          </CardBody>
-        </Card>
-      )}
-
-      {/* Battles List */}
-      <div className="space-y-6">
-        {paginatedBattles.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-gray-400 text-6xl mb-4">🤖</div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No battles found</h3>
-            <p className="text-gray-600">
-              {battleFilter === 'all' 
-                ? 'No battles have been created yet.' 
-                : `No ${battleFilter} battles found.`
-              }
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-gray-900 via-purple-900 to-pink-900 bg-clip-text text-transparent mb-6">
+              Community Arena
+            </h1>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              Watch AI models battle it out on various topics. Vote for your favorites and see who comes out on top!
             </p>
           </div>
-        ) : (
-          paginatedBattles.map((battle) => {
-            const model1Info = getModelInfo(battle.model1);
-            const model2Info = getModelInfo(battle.model2);
-            
-            return (
-              <Card key={battle.id} className="overflow-hidden">
-                <CardHeader className="bg-gray-50">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900">{battle.question}</h3>
-                      <p className="text-sm text-gray-600">
-                        Created by {battle.creator} • {formatDate(battle.createdAt)}
-                      </p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        battle.isActive 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-gray-100 text-gray-800'
-                      }`}>
-                        {battle.isActive ? 'Active' : 'Closed'}
-                      </span>
-                      {battle.isActive && (
-                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          {getTimeRemaining(battle.endTime)}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </CardHeader>
+        </div>
 
-                <CardBody>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {/* Model 1 */}
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-medium text-gray-900">
-                          {model1Info.icon} {model1Info.label}
-                        </h4>
-                        {!battle.isActive && (
-                          <span className={`px-2 py-1 rounded text-xs font-medium ${
-                            getBattleResult(battle, 'model1') === 'Win' ? 'bg-green-100 text-green-800' :
-                            getBattleResult(battle, 'model1') === 'Lose' ? 'bg-red-100 text-red-800' :
-                            'bg-gray-100 text-gray-800'
-                          }`}>
-                            {getBattleResult(battle, 'model1')}
-                          </span>
-                        )}
-                      </div>
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <p className="text-gray-700 whitespace-pre-wrap">{battle.model1Response}</p>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">
-                          {battle.model1Votes} votes
-                        </span>
-                        {battle.isActive && (
-                          <Button
-                            onClick={() => voteForModel(battle.id, 'model1')}
-                            disabled={battle.hasVoted}
-                            className={`px-4 py-2 rounded-lg text-sm ${
-                              battle.userVote === 'model1' 
-                                ? 'bg-green-600 text-white cursor-not-allowed' 
-                                : battle.hasVoted 
-                                  ? 'bg-gray-400 text-white cursor-not-allowed' 
-                                  : 'bg-blue-600 hover:bg-blue-700 text-white'
-                            }`}
-                          >
-                            {battle.userVote === 'model1' ? '✓ Voted' : battle.hasVoted ? 'Already Voted' : 'Vote'}
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Model 2 */}
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-medium text-gray-900">
-                          {model2Info.icon} {model2Info.label}
-                        </h4>
-                        {!battle.isActive && (
-                          <span className={`px-2 py-1 rounded text-xs font-medium ${
-                            getBattleResult(battle, 'model2') === 'Win' ? 'bg-green-100 text-green-800' :
-                            getBattleResult(battle, 'model2') === 'Lose' ? 'bg-red-100 text-red-800' :
-                            'bg-gray-100 text-gray-800'
-                          }`}>
-                            {getBattleResult(battle, 'model2')}
-                          </span>
-                        )}
-                      </div>
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <p className="text-gray-700 whitespace-pre-wrap">{battle.model2Response}</p>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">
-                          {battle.model2Votes} votes
-                        </span>
-                        {battle.isActive && (
-                          <Button
-                            onClick={() => voteForModel(battle.id, 'model2')}
-                            disabled={battle.hasVoted}
-                            className={`px-4 py-2 rounded-lg text-sm ${
-                              battle.userVote === 'model2' 
-                                ? 'bg-green-600 text-white cursor-not-allowed' 
-                                : battle.hasVoted 
-                                  ? 'bg-gray-400 text-white cursor-not-allowed' 
-                                  : 'bg-blue-600 hover:bg-blue-700 text-white'
-                            }`}
-                          >
-                            {battle.userVote === 'model2' ? '✓ Voted' : battle.hasVoted ? 'Already Voted' : 'Vote'}
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Battle Stats */}
-                  <div className="mt-6 pt-4 border-t border-gray-200">
-                    <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
-                      <span>Total Votes: {battle.totalVotes}</span>
-                      <span>Participants: {battle.participants.length}</span>
-                    </div>
-                    {/* Winner Result */}
-                    <div className="text-center">
-                      <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                        (() => {
-                          const now = new Date();
-                          const endTime = new Date(battle.endTime);
-                          const isExpired = now > endTime;
-                          
-                          if (battle.isActive && !isExpired) {
-                            return 'bg-blue-100 text-blue-800'; // Battle in progress
-                          }
-                          if (battle.totalVotes === 0) {
-                            return 'bg-gray-100 text-gray-600'; // No votes
-                          }
-                          if (battle.model1Votes > battle.model2Votes) {
-                            return 'bg-green-100 text-green-800'; // Model 1 wins
-                          }
-                          if (battle.model2Votes > battle.model1Votes) {
-                            return 'bg-blue-100 text-blue-800'; // Model 2 wins
-                          }
-                          return 'bg-yellow-100 text-yellow-800'; // Draw
-                        })()
-                      }`}>
-                        {getBattleWinner(battle)}
-                      </span>
-                    </div>
-                  </div>
-                </CardBody>
-              </Card>
-            );
-          })
-        )}
-      </div>
-
-      {/* Pagination Controls */}
-      {totalPages > 1 && (
-        <div className="flex flex-col items-center space-y-4 mt-8">
-          <div className="flex items-center space-x-4">
-            <Button
-              onClick={() => setCurrentPage(1)}
-              disabled={currentPage === 1}
-              className="px-3 py-1 bg-gray-200 hover:bg-gray-300 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-            >
-              First
-            </Button>
-            
-            <Button
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Previous
-            </Button>
-            
-            <span className="text-gray-600 font-medium">
-              Page {currentPage} of {totalPages}
-            </span>
-            
-            <Button
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Next
-            </Button>
-            
-            <Button
-              onClick={() => setCurrentPage(totalPages)}
-              disabled={currentPage === totalPages}
-              className="px-3 py-1 bg-gray-200 hover:bg-gray-300 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-            >
-              Last
-            </Button>
+        {/* Error/Success Messages */}
+        {error && (
+          <div className="mb-8 relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-pink-600 rounded-2xl blur-sm opacity-20"></div>
+            <div className="relative bg-white/90 backdrop-blur-xl border border-red-200 rounded-2xl p-6 shadow-xl">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+                  <span className="text-red-600 text-xl">⚠️</span>
+                </div>
+                <p className="text-red-800 font-medium">{error}</p>
+              </div>
+            </div>
           </div>
-          
-          <div className="text-sm text-gray-500">
-            Showing {startIndex + 1}-{Math.min(endIndex, filteredBattles.length)} of {filteredBattles.length} battles
+        )}
+        
+        {success && (
+          <div className="mb-8 relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl blur-sm opacity-20"></div>
+            <div className="relative bg-white/90 backdrop-blur-xl border border-green-200 rounded-2xl p-6 shadow-xl">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                  <span className="text-green-600 text-xl">✅</span>
+                </div>
+                <p className="text-green-800 font-medium">{success}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Filter Tabs */}
+        <div className="mb-8">
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-600 rounded-2xl blur-sm opacity-20"></div>
+            <div className="relative bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl p-2 shadow-xl">
+              <div className="flex space-x-2">
+                {[
+                  { key: 'all', label: 'All Battles', icon: '🏆' },
+                  { key: 'active', label: 'Active', icon: '⚡' },
+                  { key: 'closed', label: 'Closed', icon: '🏁' }
+                ].map(({ key, label, icon }) => (
+                  <button
+                    key={key}
+                    onClick={() => setBattleFilter(key as 'all' | 'active' | 'closed')}
+                    className={`flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ${
+                      battleFilter === key
+                        ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-lg transform scale-105'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
+                    }`}
+                  >
+                    <span>{icon}</span>
+                    <span>{label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
-      )}
+
+        {/* Create Battle Button */}
+        <div className="mb-8">
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl blur-sm opacity-75"></div>
+            <Button
+              onClick={() => setShowCreateForm(!showCreateForm)}
+              className="relative bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-4 rounded-2xl font-semibold shadow-xl transform hover:scale-105 transition-all duration-300"
+            >
+              <span className="flex items-center gap-3">
+                <span className="text-xl">{showCreateForm ? '❌' : '⚔️'}</span>
+                <span>{showCreateForm ? 'Cancel Battle' : 'Create New Battle'}</span>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </span>
+            </Button>
+          </div>
+        </div>
+
+        {/* Create Battle Form */}
+        {showCreateForm && (
+          <div className="mb-8 relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-3xl blur-lg opacity-20"></div>
+            <div className="relative bg-white/90 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl overflow-hidden">
+              <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-8">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
+                    <span className="text-2xl">⚔️</span>
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-white">Create New Battle</h3>
+                    <p className="text-blue-100">Set up an epic AI showdown</p>
+                  </div>
+                </div>
+              </div>
+              <div className="p-8 space-y-6">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-800 mb-3">
+                    Battle Question
+                  </label>
+                  <textarea
+                    value={newBattle.question}
+                    onChange={(e) => setNewBattle({ ...newBattle, question: e.target.value })}
+                    placeholder="Enter the question for the AI models to answer..."
+                    className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 shadow-sm hover:shadow-md resize-none"
+                    rows={3}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-800 mb-3">
+                      Model 1
+                    </label>
+                    <select
+                      value={newBattle.model1}
+                      onChange={(e) => setNewBattle({ ...newBattle, model1: e.target.value })}
+                      className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 shadow-sm hover:shadow-md"
+                    >
+                      {ARENA_MODELS.map(model => (
+                        <option key={model.id} value={model.id}>
+                          {model.icon} {model.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-800 mb-3">
+                      Model 2
+                    </label>
+                    <select
+                      value={newBattle.model2}
+                      onChange={(e) => setNewBattle({ ...newBattle, model2: e.target.value })}
+                      className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 shadow-sm hover:shadow-md"
+                    >
+                      {ARENA_MODELS.map(model => (
+                        <option key={model.id} value={model.id}>
+                          {model.icon} {model.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-800 mb-3">
+                    Battle Duration
+                  </label>
+                  <select
+                    value={newBattle.duration}
+                    onChange={(e) => setNewBattle({ ...newBattle, duration: parseInt(e.target.value) })}
+                    className="w-full px-4 py-3 bg-white/70 backdrop-blur-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 shadow-sm hover:shadow-md"
+                  >
+                    <option value={5}>5 minutes</option>
+                    <option value={10}>10 minutes</option>
+                    <option value={15}>15 minutes</option>
+                    <option value={30}>30 minutes</option>
+                    <option value={60}>1 hour</option>
+                    <option value={1440}>24 hours</option>
+                  </select>
+                </div>
+
+                <div className="flex justify-end space-x-4 pt-4">
+                  <Button
+                    onClick={() => setShowCreateForm(false)}
+                    className="px-6 py-3 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-xl transition-all duration-300"
+                  >
+                    Cancel
+                  </Button>
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl blur-sm opacity-75"></div>
+                    <Button
+                      onClick={createBattle}
+                      disabled={isCreating}
+                      className="relative bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white px-8 py-3 rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 disabled:transform-none"
+                    >
+                      <span className="flex items-center gap-2">
+                        {isCreating ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            Creating...
+                          </>
+                        ) : (
+                          <>
+                            <span>Create Battle</span>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                          </>
+                        )}
+                      </span>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Battles List */}
+        <div className="space-y-8">
+          {paginatedBattles.length === 0 ? (
+            <div className="text-center py-20">
+              <div className="relative">
+                <div className="w-24 h-24 bg-gradient-to-r from-purple-100 to-pink-100 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl">
+                  <span className="text-4xl">🤖</span>
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-600 rounded-3xl blur-lg opacity-20"></div>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-800 mb-3">No Battles Found</h3>
+              <p className="text-gray-600 text-lg">
+                {battleFilter === 'all' 
+                  ? 'No battles have been created yet.' 
+                  : `No ${battleFilter} battles found.`
+                }
+              </p>
+            </div>
+          ) : (
+            paginatedBattles.map((battle, index) => {
+              const model1Info = getModelInfo(battle.model1);
+              const model2Info = getModelInfo(battle.model2);
+              
+              return (
+                <div key={battle.id} className="relative group" style={{ animationDelay: `${index * 100}ms` }}>
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-600 rounded-3xl blur-lg opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
+                  <div className="relative bg-white/90 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl overflow-hidden group-hover:shadow-3xl transition-all duration-500 group-hover:scale-[1.02]">
+                    {/* Battle Header */}
+                    <div className="bg-gradient-to-r from-purple-500 to-pink-600 p-8">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <h3 className="text-2xl font-bold text-white mb-3">{battle.question}</h3>
+                          <div className="flex items-center gap-4 text-blue-100">
+                            <span className="flex items-center gap-2">
+                              <span className="text-lg">👤</span>
+                              <span>Created by {battle.creator}</span>
+                            </span>
+                            <span className="flex items-center gap-2">
+                              <span className="text-lg">🕒</span>
+                              <span>{formatDate(battle.createdAt)}</span>
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className={`px-4 py-2 rounded-xl text-sm font-semibold ${
+                            battle.isActive 
+                              ? 'bg-green-500/20 text-green-100 border border-green-300/30' 
+                              : 'bg-gray-500/20 text-gray-100 border border-gray-300/30'
+                          }`}>
+                            {battle.isActive ? '⚡ Active' : '🏁 Closed'}
+                          </span>
+                          {battle.isActive && (
+                            <span className="px-4 py-2 rounded-xl text-sm font-semibold bg-blue-500/20 text-blue-100 border border-blue-300/30">
+                              ⏰ {getTimeRemaining(battle.endTime)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Battle Content */}
+                    <div className="p-8">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {/* Model 1 */}
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg">
+                                {model1Info.icon}
+                              </div>
+                              <div>
+                                <h4 className="text-lg font-bold text-gray-900">{model1Info.label}</h4>
+                                <p className="text-sm text-gray-600">AI Model</p>
+                              </div>
+                            </div>
+                            {!battle.isActive && (
+                              <span className={`px-3 py-1 rounded-xl text-sm font-semibold ${
+                                getBattleResult(battle, 'model1') === 'Win' ? 'bg-green-100 text-green-800 border border-green-200' :
+                                getBattleResult(battle, 'model1') === 'Lose' ? 'bg-red-100 text-red-800 border border-red-200' :
+                                'bg-gray-100 text-gray-800 border border-gray-200'
+                              }`}>
+                                {getBattleResult(battle, 'model1')}
+                              </span>
+                            )}
+                          </div>
+                          <div className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-2xl p-6 shadow-inner">
+                            <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{battle.model1Response}</p>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span className="text-2xl">🗳️</span>
+                              <span className="text-sm font-semibold text-gray-600">
+                                {battle.model1Votes} votes
+                              </span>
+                            </div>
+                            {battle.isActive && (
+                              <div className="relative">
+                                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl blur-sm opacity-75"></div>
+                                <Button
+                                  onClick={() => voteForModel(battle.id, 'model1')}
+                                  disabled={battle.hasVoted}
+                                  className={`relative px-6 py-3 rounded-xl text-sm font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 ${
+                                    battle.userVote === 'model1' 
+                                      ? 'bg-green-600 text-white cursor-not-allowed' 
+                                      : battle.hasVoted 
+                                        ? 'bg-gray-400 text-white cursor-not-allowed' 
+                                        : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white'
+                                  }`}
+                                >
+                                  {battle.userVote === 'model1' ? '✓ Voted' : battle.hasVoted ? 'Already Voted' : 'Vote'}
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Model 2 */}
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-red-600 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg">
+                                {model2Info.icon}
+                              </div>
+                              <div>
+                                <h4 className="text-lg font-bold text-gray-900">{model2Info.label}</h4>
+                                <p className="text-sm text-gray-600">AI Model</p>
+                              </div>
+                            </div>
+                            {!battle.isActive && (
+                              <span className={`px-3 py-1 rounded-xl text-sm font-semibold ${
+                                getBattleResult(battle, 'model2') === 'Win' ? 'bg-green-100 text-green-800 border border-green-200' :
+                                getBattleResult(battle, 'model2') === 'Lose' ? 'bg-red-100 text-red-800 border border-red-200' :
+                                'bg-gray-100 text-gray-800 border border-gray-200'
+                              }`}>
+                                {getBattleResult(battle, 'model2')}
+                              </span>
+                            )}
+                          </div>
+                          <div className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-2xl p-6 shadow-inner">
+                            <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{battle.model2Response}</p>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span className="text-2xl">🗳️</span>
+                              <span className="text-sm font-semibold text-gray-600">
+                                {battle.model2Votes} votes
+                              </span>
+                            </div>
+                            {battle.isActive && (
+                              <div className="relative">
+                                <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-red-600 rounded-xl blur-sm opacity-75"></div>
+                                <Button
+                                  onClick={() => voteForModel(battle.id, 'model2')}
+                                  disabled={battle.hasVoted}
+                                  className={`relative px-6 py-3 rounded-xl text-sm font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 ${
+                                    battle.userVote === 'model2' 
+                                      ? 'bg-green-600 text-white cursor-not-allowed' 
+                                      : battle.hasVoted 
+                                        ? 'bg-gray-400 text-white cursor-not-allowed' 
+                                        : 'bg-gradient-to-r from-pink-500 to-red-600 hover:from-pink-600 hover:to-red-700 text-white'
+                                  }`}
+                                >
+                                  {battle.userVote === 'model2' ? '✓ Voted' : battle.hasVoted ? 'Already Voted' : 'Vote'}
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Battle Stats */}
+                      <div className="mt-8 pt-6 border-t border-gray-200">
+                        <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg">🗳️</span>
+                            <span className="font-semibold">Total Votes: {battle.totalVotes}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg">👥</span>
+                            <span className="font-semibold">Participants: {battle.participants.length}</span>
+                          </div>
+                        </div>
+                        {/* Winner Result */}
+                        <div className="text-center">
+                          <div className="relative inline-block">
+                            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-600 rounded-2xl blur-sm opacity-30"></div>
+                            <span className={`relative inline-block px-6 py-3 rounded-2xl text-lg font-bold ${
+                              (() => {
+                                const now = new Date();
+                                const endTime = new Date(battle.endTime);
+                                const isExpired = now > endTime;
+                                
+                                if (battle.isActive && !isExpired) {
+                                  return 'bg-blue-100 text-blue-800 border border-blue-200'; // Battle in progress
+                                }
+                                if (battle.totalVotes === 0) {
+                                  return 'bg-gray-100 text-gray-600 border border-gray-200'; // No votes
+                                }
+                                if (battle.model1Votes > battle.model2Votes) {
+                                  return 'bg-green-100 text-green-800 border border-green-200'; // Model 1 wins
+                                }
+                                if (battle.model2Votes > battle.model1Votes) {
+                                  return 'bg-blue-100 text-blue-800 border border-blue-200'; // Model 2 wins
+                                }
+                                return 'bg-yellow-100 text-yellow-800 border border-yellow-200'; // Draw
+                              })()
+                            }`}>
+                              {getBattleWinner(battle)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="mt-12">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-600 rounded-3xl blur-lg opacity-20"></div>
+              <div className="relative bg-white/80 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-xl">
+                <div className="flex flex-col items-center space-y-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl blur-sm opacity-75"></div>
+                      <Button
+                        onClick={() => setCurrentPage(1)}
+                        disabled={currentPage === 1}
+                        className="relative px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 disabled:transform-none disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        First
+                      </Button>
+                    </div>
+                    
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-600 rounded-xl blur-sm opacity-75"></div>
+                      <Button
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                        className="relative px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 disabled:from-gray-400 disabled:to-gray-500 text-white rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 disabled:transform-none disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <span className="flex items-center gap-2">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                          </svg>
+                          Previous
+                        </span>
+                      </Button>
+                    </div>
+                    
+                    <div className="px-6 py-3 bg-gradient-to-r from-gray-100 to-gray-200 rounded-xl border border-gray-300">
+                      <span className="text-gray-700 font-bold text-lg">
+                        Page {currentPage} of {totalPages}
+                      </span>
+                    </div>
+                    
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-red-600 rounded-xl blur-sm opacity-75"></div>
+                      <Button
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                        className="relative px-6 py-3 bg-gradient-to-r from-pink-500 to-red-600 hover:from-pink-600 hover:to-red-700 disabled:from-gray-400 disabled:to-gray-500 text-white rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 disabled:transform-none disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <span className="flex items-center gap-2">
+                          Next
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </span>
+                      </Button>
+                    </div>
+                    
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-r from-red-500 to-pink-600 rounded-xl blur-sm opacity-75"></div>
+                      <Button
+                        onClick={() => setCurrentPage(totalPages)}
+                        disabled={currentPage === totalPages}
+                        className="relative px-4 py-2 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 disabled:from-gray-400 disabled:to-gray-500 text-white rounded-xl font-semibold shadow-lg transform hover:scale-105 transition-all duration-300 disabled:transform-none disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Last
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/60 backdrop-blur-sm rounded-xl border border-gray-200">
+                      <span className="text-lg">📊</span>
+                      <span className="text-sm font-semibold text-gray-700">
+                        Showing {startIndex + 1}-{Math.min(endIndex, filteredBattles.length)} of {filteredBattles.length} battles
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
