@@ -238,13 +238,16 @@ export default function AppShell() {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
+          console.log('No token found, user not logged in');
           return;
         }
 
+        console.log('Loading user profile...');
         const response = await axios.get('/api/auth/profile', {
           headers: { Authorization: `Bearer ${token}` }
         });
         
+        console.log('User profile loaded:', response.data);
         setUser(response.data);
       } catch (error) {
         console.error('Failed to load user profile:', error);
@@ -270,14 +273,33 @@ export default function AppShell() {
       const token = localStorage.getItem('token');
       if (!token) return;
 
+      console.log('Updating tokens in database:', tokens);
       const response = await axios.post('/api/auth/update-tokens', 
         { tokens }, 
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
+      console.log('Tokens updated, new user data:', response.data);
       setUser(prev => prev ? { ...prev, ...response.data } : null);
     } catch (error) {
       console.error('Failed to update tokens:', error);
+    }
+  };
+
+  // Function to refresh user data
+  const refreshUserData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await axios.get('/api/auth/profile', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      console.log('User data refreshed:', response.data);
+      setUser(response.data);
+    } catch (error) {
+      console.error('Failed to refresh user data:', error);
     }
   };
 
@@ -1558,22 +1580,29 @@ export default function AppShell() {
             </div>
             <div className="flex items-center gap-4">
               {user ? (
-                <div className="items-center gap-3 hidden md:flex">
-                  <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/70 px-3 py-1.5 text-sm text-gray-700 shadow-sm">
-                    <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
-                    <span className="font-semibold">{(user?.monthlyTokens ?? 0).toLocaleString()}</span>
-                    <span className="text-gray-500">this month</span>
-                    <span className="text-gray-300">•</span>
-                    <span className="text-xs text-gray-500">Reset {new Date(user?.lastTokenReset ?? Date.now()).toLocaleDateString()}</span>
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="inline-flex items-center gap-1 sm:gap-2 rounded-full border border-gray-200 bg-white/70 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm text-gray-700 shadow-sm">
+                    <span className="inline-block h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-emerald-500" />
+                    <span className="font-semibold text-xs sm:text-sm">{(user?.monthlyTokens ?? 0).toLocaleString()}</span>
+                    <button 
+                      onClick={refreshUserData}
+                      className="ml-1 text-gray-400 hover:text-gray-600 transition-colors"
+                      title="Refresh token count"
+                    >
+                      🔄
+                    </button>
+                    <span className="text-gray-500 hidden sm:inline text-xs">this month</span>
+                    <span className="text-gray-300 hidden sm:inline">•</span>
+                    <span className="text-xs text-gray-500 hidden sm:inline">Reset {new Date(user?.lastTokenReset ?? Date.now()).toLocaleDateString()}</span>
                   </div>
                   <button
                     onClick={() => setSidebarOpen(!sidebarOpen)}
-                    className="flex items-center gap-2 rounded-full border border-gray-200 bg-white/70 px-3 py-1.5 text-sm text-gray-700 shadow-sm hover:bg-white hover:shadow-md transition-all duration-200"
+                    className="flex items-center gap-1 sm:gap-2 rounded-full border border-gray-200 bg-white/70 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm text-gray-700 shadow-sm hover:bg-white hover:shadow-md transition-all duration-200"
                   >
-                    <div className="h-6 w-6 rounded-full bg-gradient-to-br from-emerald-400 to-teal-400 flex items-center justify-center text-white font-bold text-xs">
+                    <div className="h-5 w-5 sm:h-6 sm:w-6 rounded-full bg-gradient-to-br from-emerald-400 to-teal-400 flex items-center justify-center text-white font-bold text-xs">
                       {(user?.username?.charAt(0)?.toUpperCase() ?? 'U')}
                     </div>
-                    <div className="flex flex-col items-start">
+                    <div className="flex flex-col items-start hidden sm:flex">
                       <span className="text-sm font-medium text-gray-900">{user?.username ?? 'User'}</span>
                       <span className="text-xs text-gray-500">Free User</span>
                     </div>
