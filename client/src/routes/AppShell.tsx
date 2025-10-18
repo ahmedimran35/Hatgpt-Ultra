@@ -1578,46 +1578,32 @@ export default function AppShell() {
                 <div className="hidden" />
               </div>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1 sm:gap-4">
               {user ? (
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="inline-flex items-center gap-1 sm:gap-2 rounded-full border border-gray-200 bg-white/70 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm text-gray-700 shadow-sm">
-                    <span className="inline-block h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-emerald-500" />
-                    <span className="font-semibold text-xs sm:text-sm">{(user?.monthlyTokens ?? 0).toLocaleString()}</span>
+                <div className="flex items-center gap-1 sm:gap-2">
+                  {/* Token Counter - Compact Mobile Design */}
+                  <div className="flex items-center gap-1 rounded-full border border-gray-200 bg-white/70 px-2 py-1 text-xs text-gray-700 shadow-sm">
+                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                    <span className="font-semibold">{(user?.monthlyTokens ?? 0).toLocaleString()}</span>
                     <button 
                       onClick={refreshUserData}
-                      className="ml-1 text-gray-400 hover:text-gray-600 transition-colors"
-                      title="Refresh token count"
+                      className="text-gray-400 hover:text-gray-600 transition-colors text-xs"
+                      title="Refresh"
                     >
                       🔄
                     </button>
-                    <span className="text-gray-500 hidden sm:inline text-xs">this month</span>
-                    <span className="text-gray-300 hidden sm:inline">•</span>
-                    <span className="text-xs text-gray-500 hidden sm:inline">Reset {new Date(user?.lastTokenReset ?? Date.now()).toLocaleDateString()}</span>
                   </div>
+                  
+                  {/* User Avatar - Opens Profile Menu */}
                   <button
                     onClick={() => setSidebarOpen(!sidebarOpen)}
-                    className="flex items-center gap-1 sm:gap-2 rounded-full border border-gray-200 bg-white/70 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm text-gray-700 shadow-sm hover:bg-white hover:shadow-md transition-all duration-200"
+                    className="flex items-center rounded-full border border-gray-200 bg-white/70 p-1.5 text-gray-700 shadow-sm hover:bg-white hover:shadow-md transition-all duration-200"
+                    title="Profile & Settings"
                   >
-                    <div className="h-5 w-5 sm:h-6 sm:w-6 rounded-full bg-gradient-to-br from-emerald-400 to-teal-400 flex items-center justify-center text-white font-bold text-xs">
+                    <div className="h-5 w-5 rounded-full bg-gradient-to-br from-emerald-400 to-teal-400 flex items-center justify-center text-white font-bold text-xs">
                       {(user?.username?.charAt(0)?.toUpperCase() ?? 'U')}
                     </div>
-                    <div className="flex flex-col items-start hidden sm:flex">
-                      <span className="text-sm font-medium text-gray-900">{user?.username ?? 'User'}</span>
-                      <span className="text-xs text-gray-500">Free User</span>
-                    </div>
                   </button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="rounded-full px-3 py-1.5 text-red-600 hover:text-red-700 hover:bg-red-50 transition-all duration-200"
-                    onClick={() => {
-                      localStorage.removeItem('token');
-                      window.location.href = '/login';
-                    }}
-                  >
-                    🚪 Logout
-                  </Button>
                 </div>
               ) : (
                 <div className="flex items-center gap-3">
