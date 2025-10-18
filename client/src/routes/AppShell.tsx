@@ -1727,16 +1727,49 @@ export default function AppShell() {
               </div>
             </div>
           ) : (
-            <div className="flex items-center gap-4 w-full">
+            <>
+              {/* Mobile: Full width layout */}
+              <div className="w-full sm:hidden">
+              <div className="mb-2">
+                <span className="inline-flex items-center gap-1 rounded-full bg-mint-50 px-2.5 py-1 text-xs font-medium text-mint-700 ring-1 ring-inset ring-mint-200">
+                  Models
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-1 w-full">
+                {ALL_MODELS.map((m) => (
+                  <label 
+                    key={m.id} 
+                    className={`inline-flex items-center gap-1.5 px-2 py-1.5 cursor-pointer transition-all duration-200 text-xs rounded border flex-shrink-0 ${
+                      selectedModels.includes(m.id) 
+                        ? 'bg-mint-50 text-mint-700 border-mint-300' 
+                        : 'bg-white hover:bg-mint-50/50 text-slate-600 border-gray-200'
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedModels.includes(m.id)}
+                      onChange={() => toggleModel(m.id)}
+                      className="h-3 w-3 text-mint-600 focus:ring-emerald-500 border-slate-300 rounded"
+                    />
+                    <span className="font-medium text-xs whitespace-nowrap">{m.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+            
+            {/* Desktop: Original layout */}
+            <div className="hidden sm:flex items-center gap-4 w-full">
               <span className="inline-flex items-center gap-1 rounded-full bg-mint-50 px-2.5 py-1 text-xs font-medium text-mint-700 ring-1 ring-inset ring-mint-200">
                 Models
               </span>
-              <div className="flex-1">
-                <div className="flex flex-wrap gap-2 p-1">
+              <div className="flex-1 w-full">
+                
+                {/* Desktop: Wrap layout */}
+                <div className="hidden sm:flex flex-wrap gap-2 p-1">
                   {ALL_MODELS.map((m) => (
                     <label 
                       key={m.id} 
-                      className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 cursor-pointer transition-all duration-200 text-xs sm:text-sm ring-1 ${
+                      className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 cursor-pointer transition-all duration-200 text-sm ring-1 ${
                         selectedModels.includes(m.id) 
                           ? 'ring-mint-300 bg-gradient-to-r from-mint-50 to-white text-mint-700 shadow-sm' 
                           : 'ring-slate-200 hover:ring-mint-300 hover:bg-mint-50/50 text-slate-600'
@@ -1748,7 +1781,7 @@ export default function AppShell() {
                         onChange={() => toggleModel(m.id)}
                         className="h-3 w-3 text-mint-600 focus:ring-emerald-500 border-slate-300 rounded"
                       />
-                      <span className="hidden sm:inline" aria-hidden>{getModelIcon(m.id)}</span>
+                      <span aria-hidden>{getModelIcon(m.id)}</span>
                       <span className="font-medium">{m.label}</span>
                     </label>
                   ))}
@@ -1768,6 +1801,7 @@ export default function AppShell() {
                 </Button>
               </div>
             </div>
+            </>
           )}
         </div>
       </div>
@@ -2110,10 +2144,10 @@ export default function AppShell() {
         ) : (
           <div className={`h-full grid gap-6 min-h-0 ${
             visibleModels.length === 1 ? 'grid-cols-1' :
-            visibleModels.length === 2 ? 'grid-cols-1 lg:grid-cols-2' :
-            visibleModels.length === 3 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' :
-            visibleModels.length === 4 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4' :
-            'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'
+            visibleModels.length === 2 ? 'grid-cols-2 lg:grid-cols-2' :
+            visibleModels.length === 3 ? 'grid-cols-2 md:grid-cols-2 lg:grid-cols-3' :
+            visibleModels.length === 4 ? 'grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4' :
+            'grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'
           }`}>
             {visibleModels.map((m) => (
               <div key={m} className="flex flex-col h-full min-h-0">
