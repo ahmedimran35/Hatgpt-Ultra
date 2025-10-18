@@ -1867,7 +1867,7 @@ export default function AppShell() {
       {/* Sidebar */}
       {sidebarOpen && (
         <div className="fixed inset-y-0 left-0 z-50 w-80 bg-white/95 backdrop-blur-xl border-r border-gray-200/60 shadow-2xl">
-          <div className="h-full flex flex-col">
+          <div className="h-full flex flex-col overflow-hidden">
             {/* Sidebar Header */}
             <div className="p-6 border-b border-gray-200/60 bg-gradient-to-br from-emerald-50 via-white to-teal-50">
               <div className="flex items-center justify-between">
@@ -1884,59 +1884,125 @@ export default function AppShell() {
               </div>
             </div>
 
-            {/* Profile Section */}
-            <div className="p-6 border-b border-gray-200/50">
-              <h3 className="text-sm font-semibold text-gray-700 mb-4">Profile</h3>
-              <div className="space-y-4">
-                <div className="flex items-center gap-4 rounded-2xl bg-gradient-to-br from-white to-emerald-50/30 border border-gray-200/50 p-4 shadow-sm">
-                  <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-400 flex items-center justify-center text-white font-bold text-lg shadow">
-                    {user ? (user.username || user.email).charAt(0).toUpperCase() : 'U'}
-                  </div>
-                  <div className="flex-1">
-                    <div className="font-bold text-gray-900 text-lg">
-                      {user ? (user.username || user.email.split('@')[0]) : 'User'}
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto">
+              {/* Profile Section */}
+              <div className="p-6 border-b border-white/20">
+              <div className="space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
+                  <h3 className="text-lg font-bold text-gray-800">Profile</h3>
+                </div>
+                
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-3xl blur-lg opacity-20"></div>
+                  <div className="relative bg-white/90 backdrop-blur-xl rounded-3xl border border-white/20 p-6 shadow-2xl">
+                    <div className="flex items-center gap-6">
+                      <div className="relative">
+                        <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-2xl shadow-xl">
+                          {user ? (user.username || user.email).charAt(0).toUpperCase() : 'U'}
+                        </div>
+                        <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
+                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-3">
+                            <h4 className="text-xl font-bold text-gray-900">
+                              {user ? (user.username || user.email.split('@')[0]) : 'User'}
+                            </h4>
+                            <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
+                              Free User
+                            </span>
+                          </div>
+                          <div className="text-sm text-gray-600 font-medium">
+                            {user ? user.email : 'user@example.com'}
+                          </div>
+                          <div className="flex items-center gap-2 text-xs text-gray-500">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            <span>Active</span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-600">
-                      {user ? user.email : 'user@example.com'}
-                    </div>
-                    <div className="text-xs text-emerald-600 font-medium mt-1">Free User</div>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="rounded-xl bg-white/80 hover:bg-emerald-50 border border-gray-200 text-gray-700 hover:text-emerald-700 transition-all duration-200"
-                    onClick={() => setShowChangePassword(true)}
-                  >
-                    🔒 Change Password
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="rounded-xl bg-white/80 hover:bg-emerald-50 border border-gray-200 text-gray-700 hover:text-emerald-700 transition-all duration-200"
-                    onClick={() => setShowEditProfile(true)}
-                  >
-                    ✏️ Edit Profile
-                  </Button>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="relative group">
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl blur-sm opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="relative w-full rounded-2xl bg-white/90 backdrop-blur-xl border border-white/20 text-gray-700 hover:text-emerald-700 hover:bg-emerald-50 transition-all duration-300 py-4 px-6 shadow-lg group-hover:shadow-xl"
+                      onClick={() => setShowChangePassword(true)}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 flex items-center justify-center text-white text-lg shadow-lg">
+                          🔒
+                        </div>
+                        <div className="text-left">
+                          <div className="font-semibold text-sm">Change Password</div>
+                          <div className="text-xs text-gray-500">Update your security</div>
+                        </div>
+                      </div>
+                    </Button>
+                  </div>
+                  
+                  <div className="relative group">
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl blur-sm opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="relative w-full rounded-2xl bg-white/90 backdrop-blur-xl border border-white/20 text-gray-700 hover:text-blue-700 hover:bg-blue-50 transition-all duration-300 py-4 px-6 shadow-lg group-hover:shadow-xl"
+                      onClick={() => setShowEditProfile(true)}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white text-lg shadow-lg">
+                          ✏️
+                        </div>
+                        <div className="text-left">
+                          <div className="font-semibold text-sm">Edit Profile</div>
+                          <div className="text-xs text-gray-500">Update your details</div>
+                        </div>
+                      </div>
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Modals */}
             {showChangePassword && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-                <div className="w-full max-w-sm rounded-xl bg-white shadow-2xl p-6">
-                  <h4 className="text-sm font-semibold text-slate-900 mb-4">Change Password</h4>
-                  <ChangePasswordForm onClose={() => setShowChangePassword(false)} />
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                <div className="relative w-full max-w-md mx-4">
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-3xl blur-lg opacity-75"></div>
+                  <div className="relative bg-white/95 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl p-8">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 flex items-center justify-center text-white text-lg shadow-lg">
+                        🔒
+                      </div>
+                      <h4 className="text-xl font-bold text-gray-900">Change Password</h4>
+                    </div>
+                    <ChangePasswordForm onClose={() => setShowChangePassword(false)} />
+                  </div>
                 </div>
               </div>
             )}
             {showEditProfile && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-                <div className="w-full max-w-sm rounded-xl bg-white shadow-2xl p-6">
-                  <h4 className="text-sm font-semibold text-slate-900 mb-4">Edit Profile</h4>
-                  <EditProfileForm user={user} onUpdated={setUser} onClose={() => setShowEditProfile(false)} />
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                <div className="relative w-full max-w-md mx-4">
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-3xl blur-lg opacity-75"></div>
+                  <div className="relative bg-white/95 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl p-8">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white text-lg shadow-lg">
+                        ✏️
+                      </div>
+                      <h4 className="text-xl font-bold text-gray-900">Edit Profile</h4>
+                    </div>
+                    <EditProfileForm user={user} onUpdated={setUser} onClose={() => setShowEditProfile(false)} />
+                  </div>
                 </div>
               </div>
             )}
@@ -1944,18 +2010,55 @@ export default function AppShell() {
 
 
             {/* Token Statistics */}
-            <div className="p-6 border-b border-gray-200/50">
-              <h3 className="text-sm font-semibold text-gray-700 mb-4">Token Usage</h3>
-              <div className="space-y-4">
+            <div className="p-6 border-b border-white/20">
+              <div className="space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-blue-500 animate-pulse"></div>
+                  <h3 className="text-lg font-bold text-gray-800">Token Usage</h3>
+                </div>
+                
                 {user && (
-                  <div className="rounded-2xl p-5 bg-gradient-to-br from-emerald-50 to-white border border-emerald-200/50 shadow-sm">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="text-3xl font-bold text-emerald-700">{user.monthlyTokens.toLocaleString()}</div>
-                      <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-3xl blur-lg opacity-20"></div>
+                    <div className="relative bg-white/90 backdrop-blur-xl rounded-3xl border border-white/20 p-6 shadow-2xl">
+                      <div className="space-y-6">
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-2">
+                            <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                              {user.monthlyTokens.toLocaleString()}
+                            </div>
+                            <div className="text-sm text-gray-600 font-medium">Tokens used this month</div>
+                          </div>
+                          <div className="relative">
+                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl shadow-xl">
+                              🔋
+                            </div>
+                            <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
+                              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-gray-50 to-white border border-gray-200/50">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                              <span className="text-sm font-medium text-gray-700">Reset Date</span>
+                            </div>
+                            <span className="text-sm font-semibold text-gray-900">
+                              {new Date(user.lastTokenReset).toLocaleDateString()}
+                            </span>
+                          </div>
+                          
+                          <div className="p-3 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200/50">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                              <span className="text-xs text-emerald-700 font-semibold">* Estimated based on text length</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-600 mb-2">Tokens used this month</div>
-                    <div className="text-xs text-gray-500">Reset: {new Date(user.lastTokenReset).toLocaleDateString()}</div>
-                    <div className="mt-3 text-xs text-emerald-600 font-medium">* Estimated based on text length</div>
                   </div>
                 )}
               </div>
@@ -1963,27 +2066,64 @@ export default function AppShell() {
 
             {/* Chat Statistics */}
             <div className="p-6 flex-1">
-              <h3 className="text-sm font-semibold text-gray-700 mb-4">Chat Stats</h3>
-              <div className="space-y-3">
-                <div className="rounded-2xl bg-gradient-to-br from-white to-gray-50/50 border border-gray-200/50 p-4 shadow-sm">
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-emerald-600">{singleChatConversation.length}</div>
-                      <div className="text-xs text-gray-600 mt-1">Single Chat</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-teal-600">
-                        {Object.values(compareConversations).reduce((total, conv) => total + conv.length, 0)}
+              <div className="space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-purple-500 animate-pulse"></div>
+                  <h3 className="text-lg font-bold text-gray-800">Chat Statistics</h3>
+                </div>
+                
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-600 rounded-3xl blur-lg opacity-20"></div>
+                  <div className="relative bg-white/90 backdrop-blur-xl rounded-3xl border border-white/20 p-6 shadow-2xl">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                      <div className="text-center group">
+                        <div className="relative mb-4">
+                          <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 flex items-center justify-center text-white text-2xl shadow-xl mx-auto group-hover:scale-110 transition-transform duration-300">
+                            💬
+                          </div>
+                          <div className="absolute -top-1 -right-1 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg">
+                            <div className="w-2 h-2 bg-white rounded-full"></div>
+                          </div>
+                        </div>
+                        <div className="text-3xl font-bold text-emerald-600 mb-1">{singleChatConversation.length}</div>
+                        <div className="text-sm text-gray-600 font-medium">Single Chat</div>
+                        <div className="text-xs text-gray-500 mt-1">Direct conversations</div>
                       </div>
-                      <div className="text-xs text-gray-600 mt-1">Compare Chat</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-gray-600">{visibleModels.length}</div>
-                      <div className="text-xs text-gray-600 mt-1">Active Models</div>
+                      
+                      <div className="text-center group">
+                        <div className="relative mb-4">
+                          <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-teal-500 to-cyan-600 flex items-center justify-center text-white text-2xl shadow-xl mx-auto group-hover:scale-110 transition-transform duration-300">
+                            ⚖️
+                          </div>
+                          <div className="absolute -top-1 -right-1 w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center shadow-lg">
+                            <div className="w-2 h-2 bg-white rounded-full"></div>
+                          </div>
+                        </div>
+                        <div className="text-3xl font-bold text-teal-600 mb-1">
+                          {Object.values(compareConversations).reduce((total, conv) => total + conv.length, 0)}
+                        </div>
+                        <div className="text-sm text-gray-600 font-medium">Compare Chat</div>
+                        <div className="text-xs text-gray-500 mt-1">Model comparisons</div>
+                      </div>
+                      
+                      <div className="text-center group">
+                        <div className="relative mb-4">
+                          <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-600 flex items-center justify-center text-white text-2xl shadow-xl mx-auto group-hover:scale-110 transition-transform duration-300">
+                            🤖
+                          </div>
+                          <div className="absolute -top-1 -right-1 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center shadow-lg">
+                            <div className="w-2 h-2 bg-white rounded-full"></div>
+                          </div>
+                        </div>
+                        <div className="text-3xl font-bold text-purple-600 mb-1">{visibleModels.length}</div>
+                        <div className="text-sm text-gray-600 font-medium">Active Models</div>
+                        <div className="text-xs text-gray-500 mt-1">Available AI models</div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
             </div>
           </div>
         </div>
@@ -2707,67 +2847,128 @@ function ChatHistoryModal({ isOpen, onClose, savedChats, onLoadChat, onDeleteCha
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="w-full max-w-2xl max-h-[80vh] bg-white rounded-2xl shadow-xl flex flex-col">
-        <div className="flex items-center justify-between border-b border-slate-200 p-6">
-          <h2 className="text-xl font-semibold text-slate-900">Chat History</h2>
-          <Button variant="ghost" size="sm" onClick={onClose}>
-            ✕
-          </Button>
-        </div>
-        
-        <div className="p-6 border-b border-slate-200">
-          <input
-            type="text"
-            placeholder="Search chats..."
-            value={searchQuery}
-            onChange={handleSearch}
-            className="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm focus:border-emerald-500 focus:ring-emerald-500"
-          />
-        </div>
-
-        <div className="flex-1 overflow-y-auto p-6">
-          {savedChats.length === 0 ? (
-            <div className="text-center py-12 text-slate-500">
-              <div className="text-6xl mb-4">📚</div>
-              <p className="text-lg font-medium">No saved chats yet</p>
-              <p className="text-sm text-slate-400 mt-2">Start a conversation and it will be automatically saved</p>
+      <div className="relative w-full max-w-4xl max-h-[85vh] mx-4">
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-3xl blur-lg opacity-75"></div>
+        <div className="relative bg-white/95 backdrop-blur-xl rounded-3xl border border-white/20 shadow-2xl flex flex-col">
+          {/* Header */}
+          <div className="flex items-center justify-between p-8 border-b border-white/20">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 flex items-center justify-center text-white text-2xl shadow-xl">
+                📚
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">Chat History</h2>
+                <p className="text-sm text-gray-600">Your saved conversations</p>
+              </div>
             </div>
-          ) : (
-            <div className="grid gap-4">
-              {savedChats.map((chat) => (
-                <div
-                  key={chat.id}
-                  className="rounded-xl border border-slate-200 p-4 hover:bg-slate-50 transition-colors cursor-pointer"
-                  onClick={() => onLoadChat(chat.id)}
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-base font-medium text-slate-900 truncate">
-                        {chat.title}
-                      </h3>
-                      <p className="text-sm text-slate-500 mt-1">
-                        {chat.mode === 'single' ? '💬 Single' : chat.mode === 'smart' ? '🧠 Smart' : '🧩 Compare'} • {chat.generationType}
-                      </p>
-                      <p className="text-xs text-slate-400 mt-1">
-                        {new Date(chat.updatedAt).toLocaleDateString()} • {chat.messages.length} messages
-                      </p>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDeleteChat(chat.id);
-                      }}
-                      className="text-slate-400 hover:text-red-600 p-2"
-                    >
-                      🗑️
-                    </Button>
-                  </div>
+            <button
+              onClick={onClose}
+              className="p-3 rounded-2xl bg-gray-100 hover:bg-gray-200 transition-colors duration-300 group"
+            >
+              <svg className="w-6 h-6 text-gray-600 group-hover:text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          
+          {/* Search */}
+          <div className="p-8 border-b border-white/20">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl blur-sm opacity-75"></div>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
                 </div>
-              ))}
+                <input
+                  type="text"
+                  placeholder="Search your conversations..."
+                  value={searchQuery}
+                  onChange={handleSearch}
+                  className="w-full pl-12 pr-4 py-4 rounded-2xl border border-white/20 bg-white/80 backdrop-blur-sm text-gray-900 placeholder-gray-500 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300 shadow-lg"
+                />
+              </div>
             </div>
-          )}
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto p-8 min-h-0">
+            {savedChats.length === 0 ? (
+              <div className="text-center py-16">
+                <div className="relative mb-8">
+                  <div className="w-24 h-24 rounded-3xl bg-gradient-to-r from-emerald-100 to-teal-100 flex items-center justify-center mx-auto shadow-xl">
+                    <span className="text-4xl">📚</span>
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-3xl blur-lg opacity-20"></div>
+                </div>
+                <h3 className="text-2xl font-bold text-gray-800 mb-3">No saved chats yet</h3>
+                <p className="text-gray-600 text-lg max-w-md mx-auto">
+                  Start a conversation and it will be automatically saved for you to revisit later.
+                </p>
+              </div>
+            ) : (
+              <div className="grid gap-6">
+                {savedChats.map((chat, index) => (
+                  <div
+                    key={chat.id}
+                    className="group relative"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-3xl blur-lg opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
+                    <div className="relative bg-white/90 backdrop-blur-xl rounded-3xl border border-white/20 p-6 shadow-xl hover:shadow-2xl transition-all duration-500 group-hover:scale-[1.02] cursor-pointer"
+                         onClick={() => onLoadChat(chat.id)}>
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className="w-10 h-10 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 flex items-center justify-center text-white text-lg shadow-lg">
+                              {chat.mode === 'single' ? '💬' : chat.mode === 'smart' ? '🧠' : '⚖️'}
+                            </div>
+                            <div>
+                              <h3 className="text-lg font-bold text-gray-900 truncate">
+                                {chat.title}
+                              </h3>
+                              <div className="flex items-center gap-2 mt-1">
+                                <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
+                                  {chat.mode === 'single' ? 'Single Chat' : chat.mode === 'smart' ? 'Smart Chat' : 'Compare Chat'}
+                                </span>
+                                <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
+                                  {chat.generationType}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-4 text-sm text-gray-600">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                              <span>{new Date(chat.updatedAt).toLocaleDateString()}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                              <span>{chat.messages.length} messages</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDeleteChat(chat.id);
+                          }}
+                          className="p-3 rounded-2xl bg-red-100 hover:bg-red-200 text-red-600 hover:text-red-700 transition-all duration-300 group-hover:scale-110"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
