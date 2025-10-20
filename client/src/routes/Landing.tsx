@@ -71,30 +71,30 @@ export default function Landing() {
 									<div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
 									<span className="text-sm font-semibold text-emerald-700">100% Free & Open Source</span>
 								</div>
-								<AnimatedText 
+					<AnimatedText 
 									text="The Ultimate AI Workspace for Everyone" 
 									className="text-5xl md:text-6xl font-bold leading-tight bg-gradient-to-r from-gray-900 via-emerald-900 to-teal-900 bg-clip-text text-transparent"
-									delay={200}
-								/>
+						delay={200}
+					/>
 								<p className="text-xl text-gray-600 max-w-2xl leading-relaxed">
 									Compare multiple AI models in one clean, distraction-free interface. No subscriptions, no limits, no hidden costs — just pure creativity and learning.
-								</p>
+					</p>
 							</div>
 							<div className="flex flex-wrap gap-4">
-								<Link to="/signup">
+						<Link to="/signup">
 									<div className="relative">
 										<div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl blur-sm opacity-75"></div>
 										<button className="relative px-8 py-4 text-white bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl font-semibold shadow-xl hover:from-emerald-600 hover:to-teal-700 transition-all duration-300 transform hover:scale-105">
 											Start Using Free
 										</button>
 									</div>
-								</Link>
-								<Link to="/login">
+						</Link>
+						<Link to="/login">
 									<button className="px-8 py-4 border-2 border-gray-300 rounded-2xl text-gray-700 hover:bg-gray-50 hover:border-emerald-300 transition-all duration-300 font-semibold">
 										Sign In
 									</button>
-								</Link>
-							</div>
+						</Link>
+			</div>
 							<div className="flex items-center gap-6 text-sm text-gray-500">
 								<div className="flex items-center gap-2">
 									<div className="w-2 h-2 rounded-full bg-green-500"></div>
@@ -109,8 +109,8 @@ export default function Landing() {
 									<span>No ads</span>
 								</div>
 							</div>
-						</div>
-						
+				</div>
+				
 						<FadeInSection className="relative">
 							<div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-3xl blur-lg opacity-20"></div>
 							<div className="relative bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/20">
@@ -120,13 +120,13 @@ export default function Landing() {
 									<div className="w-3 h-3 rounded-full bg-red-500"></div>
 									<h3 className="text-lg font-bold text-gray-800 ml-4">Live Preview</h3>
 								</div>
-								<div className="space-y-4">
-									<ModelCard title="GPT-5" text="Fast and factual answers for research." color="from-emerald-50 to-teal-50" />
-									<ModelCard title="Claude 4" text="Creative ideas and natural writing." color="from-green-50 to-lime-50" />
-									<ModelCard title="Gemini 2" text="Clean summaries and helpful explanations." color="from-cyan-50 to-emerald-50" />
+						<div className="space-y-4">
+						<ModelCard title="GPT-5" text="Fast and factual answers for research." color="from-emerald-50 to-teal-50" />
+						<ModelCard title="Claude 4" text="Creative ideas and natural writing." color="from-green-50 to-lime-50" />
+						<ModelCard title="Gemini 2" text="Clean summaries and helpful explanations." color="from-cyan-50 to-emerald-50" />
 								</div>
-							</div>
-						</FadeInSection>
+					</div>
+				</FadeInSection>
 					</div>
 				</div>
 			</section>
@@ -145,17 +145,17 @@ export default function Landing() {
 								Why HatGPT Ultra is 100% Free
 							</h2>
 							<p className="max-w-3xl mx-auto text-lg text-gray-600 leading-relaxed">
-								We believe in open access to AI. Our mission is to make powerful tools available to everyone — no paywalls, no trials, just genuine value for learners, creators, and curious minds.
-							</p>
+						We believe in open access to AI. Our mission is to make powerful tools available to everyone — no paywalls, no trials, just genuine value for learners, creators, and curious minds.
+					</p>
 						</div>
-						<div className="grid md:grid-cols-3 gap-8">
-							<FeatureCard icon="🌍" title="Global Access" text="Free for everyone, anywhere in the world." />
-							<FeatureCard icon="🤝" title="Community Driven" text="Built and improved with help from our users." />
-							<FeatureCard icon="🧩" title="Open & Transparent" text="No hidden APIs or upsells — you see what you get." />
+					<div className="grid md:grid-cols-3 gap-8">
+						<FeatureCard icon="🌍" title="Global Access" text="Free for everyone, anywhere in the world." />
+						<FeatureCard icon="🤝" title="Community Driven" text="Built and improved with help from our users." />
+						<FeatureCard icon="🧩" title="Open & Transparent" text="No hidden APIs or upsells — you see what you get." />
 						</div>
-					</div>
 				</div>
-			</FadeInSection>
+			</div>
+		</FadeInSection>
 
 			{/* Community */}
             <FadeInSection className="relative overflow-hidden py-20 sm:py-24">
@@ -171,8 +171,8 @@ export default function Landing() {
 								Join a Growing AI Community
 							</h2>
 							<p className="max-w-3xl mx-auto text-lg text-gray-600 leading-relaxed">
-								HatGPT Ultra is supported by curious thinkers, open-source developers, and educators. Share ideas, test features, and help shape the future of AI accessibility.
-							</p>
+						HatGPT Ultra is supported by curious thinkers, open-source developers, and educators. Share ideas, test features, and help shape the future of AI accessibility.
+					</p>
 						</div>
 						<div className="relative">
 							<div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl blur-sm opacity-75"></div>
@@ -203,15 +203,15 @@ export default function Landing() {
 						</div>
 						<div className="relative">
 							<div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl blur-sm opacity-75"></div>
-							<Link to="/signup">
+				<Link to="/signup">
 								<button className="relative px-10 py-4 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-2xl font-semibold shadow-xl hover:from-emerald-600 hover:to-teal-700 transition-all duration-300 transform hover:scale-105">
 									Start Using for Free
 								</button>
-							</Link>
+				</Link>
 						</div>
 					</div>
 				</div>
-			</FadeInSection>
+		</FadeInSection>
 
 			{/* Footer */}
             <footer className="relative overflow-hidden border-t border-white/20 bg-white/90 backdrop-blur-xl py-12">
@@ -247,7 +247,7 @@ function ModelCard({ title, text, color }: ModelCardProps) {
 		<div className={`rounded-2xl bg-gradient-to-r ${color} p-5 shadow-lg border border-white/50 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl`}>
 			<h4 className="font-bold text-gray-900 text-lg">{title}</h4>
 			<p className="text-sm text-gray-600 mt-2 leading-relaxed">{text}</p>
-		</div>
+				</div>
 	);
 }
 
@@ -261,6 +261,6 @@ function FeatureCard({ icon, title, text }: FeatureCardProps) {
 				<h4 className="font-bold text-gray-900 mb-3 text-xl">{title}</h4>
 				<p className="text-gray-600 leading-relaxed">{text}</p>
 			</div>
-		</div>
+			</div>
 	);
 }

@@ -2,9 +2,9 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Button from '../components/Button';
 import axios from '../config/axios';
 import SmartAnswer from '../components/SmartAnswer';
-import AIArena from '../components/AIArena';
 import CommunityArena from '../components/CommunityArena';
 import ToolsPage from '../components/ToolsPage';
+import CodeEditor from '../components/CodeEditor';
 
 // Types for chat history
 interface ChatMessage {
@@ -132,7 +132,7 @@ type User = {
 };
 
 export default function AppShell() {
-  const [mode, setMode] = useState<'single' | 'compare' | 'smart' | 'arena' | 'tools' | 'community'>('single');
+  const [mode, setMode] = useState<'single' | 'compare' | 'smart' | 'tools' | 'community' | 'editor'>('single');
   const [selectedModels, setSelectedModels] = useState<string[]>(['gpt-5-nano']);
   const [prompt, setPrompt] = useState('');
   const [generationType, setGenerationType] = useState<'text' | 'image' | 'audio'>('text');
@@ -1563,15 +1563,6 @@ export default function AppShell() {
                     <span className="text-xs font-semibold">Smart</span>
                   </Button>
                   <Button 
-                    variant={mode === 'arena' ? 'primary' : 'ghost'} 
-                    size="sm" 
-                    onClick={() => setMode('arena')}
-                    className={`${mode === 'arena' ? 'rounded-xl shadow-lg bg-gradient-to-r from-red-500 to-pink-600 text-white' : 'rounded-xl text-gray-600 hover:text-red-600 hover:bg-red-50'} px-3 py-1.5 transition-all duration-300 font-semibold`}
-                  >
-                    <span className="mr-1 text-sm">🥊</span>
-                    <span className="text-xs font-semibold">Arena</span>
-                  </Button>
-                  <Button 
                     variant={mode === 'tools' ? 'primary' : 'ghost'} 
                     size="sm" 
                     onClick={() => setMode('tools')}
@@ -1588,6 +1579,15 @@ export default function AppShell() {
                   >
                     <span className="mr-1 text-sm">🌍</span>
                     <span className="text-xs font-semibold">Community</span>
+                  </Button>
+                  <Button 
+                    variant={mode === 'editor' ? 'primary' : 'ghost'} 
+                    size="sm" 
+                    onClick={() => setMode('editor')}
+                    className={`${mode === 'editor' ? 'rounded-xl shadow-lg bg-gradient-to-r from-emerald-500 to-teal-600 text-white' : 'rounded-xl text-gray-600 hover:text-emerald-600 hover:bg-emerald-50'} px-3 py-1.5 transition-all duration-300 font-semibold`}
+                  >
+                    <span className="mr-1 text-sm">💻</span>
+                    <span className="text-xs font-semibold">Editor</span>
                   </Button>
                 </div>
                 <div className="hidden" />
@@ -1609,7 +1609,7 @@ export default function AppShell() {
                       >
                         🔄
                       </button>
-                    </div>
+                  </div>
                   </div>
                   
                   {/* User Avatar - Compact Design */}
@@ -1622,7 +1622,7 @@ export default function AppShell() {
                     <div className="relative flex items-center gap-2 rounded-xl border border-white/20 bg-white/80 backdrop-blur-xl px-2.5 py-1.5 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-105">
                       <div className="h-6 w-6 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-xs shadow-lg">
                         {(user?.username?.charAt(0)?.toUpperCase() ?? 'U')}
-                      </div>
+                    </div>
                       <div className="hidden sm:flex flex-col items-start">
                         <span className="text-xs font-bold text-gray-900 truncate max-w-20">{user?.username ?? 'User'}</span>
                         <span className="text-xs text-gray-600 font-medium">Profile</span>
@@ -1646,8 +1646,8 @@ export default function AppShell() {
                     <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl blur-sm opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
                     <div className="relative flex items-center gap-2 rounded-xl border border-white/20 bg-white/80 backdrop-blur-xl px-2.5 py-1.5 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-105">
                       <div className="h-6 w-6 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-xs shadow-lg">
-                        ?
-                      </div>
+                      ?
+                    </div>
                       <div className="hidden sm:flex flex-col items-start">
                         <span className="text-xs font-bold text-gray-900">Guest</span>
                         <span className="text-xs text-gray-600 font-medium">Anonymous</span>
@@ -1684,7 +1684,7 @@ export default function AppShell() {
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                       </svg>
-                    </div>
+            </div>
                   </button>
                   {userMenuOpen && (
                     <div className="absolute right-0 mt-2 w-56 rounded-xl border border-white/20 bg-white/90 backdrop-blur-xl shadow-2xl py-3 z-[260]">
@@ -1698,14 +1698,14 @@ export default function AppShell() {
                       <button onClick={() => { setMode('smart'); setUserMenuOpen(false); }} className={`block w-full text-left px-3 py-2 text-sm font-semibold hover:bg-emerald-50 transition-colors duration-300 ${mode==='smart'?'text-emerald-600 bg-emerald-50':''}`}>
                         <span className="mr-2 text-sm">🧠</span>Smart
                       </button>
-                      <button onClick={() => { setMode('arena'); setUserMenuOpen(false); }} className={`block w-full text-left px-3 py-2 text-sm font-semibold hover:bg-red-50 transition-colors duration-300 ${mode==='arena'?'text-red-600 bg-red-50':''}`}>
-                        <span className="mr-2 text-sm">🥊</span>Arena
-                      </button>
                       <button onClick={() => { setMode('tools'); setUserMenuOpen(false); }} className={`block w-full text-left px-3 py-2 text-sm font-semibold hover:bg-purple-50 transition-colors duration-300 ${mode==='tools'?'text-purple-600 bg-purple-50':''}`}>
                         <span className="mr-2 text-sm">🛠️</span>Tools
                       </button>
                       <button onClick={() => { setMode('community'); setUserMenuOpen(false); }} className={`block w-full text-left px-3 py-2 text-sm font-semibold hover:bg-purple-50 transition-colors duration-300 ${mode==='community'?'text-purple-600 bg-purple-50':''}`}>
                         <span className="mr-2 text-sm">🌍</span>Community
+                      </button>
+                      <button onClick={() => { setMode('editor'); setUserMenuOpen(false); }} className={`block w-full text-left px-3 py-2 text-sm font-semibold hover:bg-emerald-50 transition-colors duration-300 ${mode==='editor'?'text-emerald-600 bg-emerald-50':''}`}>
+                        <span className="mr-2 text-sm">💻</span>Code Editor
                       </button>
                       <div className="my-2 border-t border-gray-200"></div>
                       <button onClick={() => { setShowChatHistory(true); setUserMenuOpen(false); }} className="block w-full text-left px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-emerald-50 transition-colors duration-300">
@@ -1716,7 +1716,7 @@ export default function AppShell() {
                       </button>
                       <div className="px-3 py-2 text-xs font-semibold text-gray-600 bg-gray-50 rounded-lg mx-2">
                         <span className="mr-1">🔋</span>Tokens: {(user?.monthlyTokens ?? 0).toLocaleString()}
-                      </div>
+          </div>
                       <div className="my-2 border-t border-gray-200"></div>
                       <button onClick={() => { localStorage.removeItem('token'); window.location.href = '/login'; }} className="block w-full text-left px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors duration-300">
                         <span className="mr-2 text-sm">🚪</span>Logout
@@ -1731,7 +1731,7 @@ export default function AppShell() {
       </div>
 
       {/* Model Selection - Compact */}
-      {mode !== 'smart' && mode !== 'arena' && mode !== 'tools' && mode !== 'community' && (
+      {mode !== 'smart' && mode !== 'tools' && mode !== 'community' && mode !== 'editor' && (
       <div className="bg-white/60 backdrop-blur-sm border-b border-gray-200/30 flex-shrink-0">
         <div className="mx-auto max-w-7xl px-6 py-3">
           {mode === 'single' ? (
@@ -1788,14 +1788,14 @@ export default function AppShell() {
               {/* Mobile: Full width layout */}
               <div className="w-full sm:hidden">
               <div className="mb-2">
-                <span className="inline-flex items-center gap-1 rounded-full bg-mint-50 px-2.5 py-1 text-xs font-medium text-mint-700 ring-1 ring-inset ring-mint-200">
-                  Models
-                </span>
+              <span className="inline-flex items-center gap-1 rounded-full bg-mint-50 px-2.5 py-1 text-xs font-medium text-mint-700 ring-1 ring-inset ring-mint-200">
+                Models
+              </span>
               </div>
               <div className="flex flex-wrap gap-1 w-full">
-                {ALL_MODELS.map((m) => (
-                  <label 
-                    key={m.id} 
+                  {ALL_MODELS.map((m) => (
+                    <label 
+                      key={m.id} 
                     className={`inline-flex items-center gap-1.5 px-2 py-1.5 cursor-pointer transition-all duration-200 text-xs rounded border flex-shrink-0 ${
                       selectedModels.includes(m.id) 
                         ? 'bg-mint-50 text-mint-700 border-mint-300' 
@@ -1886,7 +1886,7 @@ export default function AppShell() {
 
             {/* Scrollable Content */}
             <div className="flex-1 overflow-y-auto">
-              {/* Profile Section */}
+            {/* Profile Section */}
               <div className="p-6 border-b border-white/20">
               <div className="space-y-6">
                 <div className="flex items-center gap-3">
@@ -1900,30 +1900,30 @@ export default function AppShell() {
                     <div className="flex items-center gap-6">
                       <div className="relative">
                         <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-2xl shadow-xl">
-                          {user ? (user.username || user.email).charAt(0).toUpperCase() : 'U'}
+                    {user ? (user.username || user.email).charAt(0).toUpperCase() : 'U'}
                         </div>
                         <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
                           <div className="w-2 h-2 bg-white rounded-full"></div>
                         </div>
-                      </div>
-                      <div className="flex-1">
+                  </div>
+                  <div className="flex-1">
                         <div className="space-y-2">
                           <div className="flex items-center gap-3">
                             <h4 className="text-xl font-bold text-gray-900">
-                              {user ? (user.username || user.email.split('@')[0]) : 'User'}
+                      {user ? (user.username || user.email.split('@')[0]) : 'User'}
                             </h4>
                             <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
                               Free User
                             </span>
-                          </div>
+                    </div>
                           <div className="text-sm text-gray-600 font-medium">
-                            {user ? user.email : 'user@example.com'}
-                          </div>
+                      {user ? user.email : 'user@example.com'}
+                    </div>
                           <div className="flex items-center gap-2 text-xs text-gray-500">
                             <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
                             <span>Active</span>
-                          </div>
-                        </div>
+                  </div>
+                </div>
                       </div>
                     </div>
                   </div>
@@ -1932,12 +1932,12 @@ export default function AppShell() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="relative group">
                     <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl blur-sm opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
                       className="relative w-full rounded-2xl bg-white/90 backdrop-blur-xl border border-white/20 text-gray-700 hover:text-emerald-700 hover:bg-emerald-50 transition-all duration-300 py-4 px-6 shadow-lg group-hover:shadow-xl"
-                      onClick={() => setShowChangePassword(true)}
-                    >
+                    onClick={() => setShowChangePassword(true)}
+                  >
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 flex items-center justify-center text-white text-lg shadow-lg">
                           🔒
@@ -1947,17 +1947,17 @@ export default function AppShell() {
                           <div className="text-xs text-gray-500">Update your security</div>
                         </div>
                       </div>
-                    </Button>
+                  </Button>
                   </div>
                   
                   <div className="relative group">
                     <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl blur-sm opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
                       className="relative w-full rounded-2xl bg-white/90 backdrop-blur-xl border border-white/20 text-gray-700 hover:text-blue-700 hover:bg-blue-50 transition-all duration-300 py-4 px-6 shadow-lg group-hover:shadow-xl"
-                      onClick={() => setShowEditProfile(true)}
-                    >
+                    onClick={() => setShowEditProfile(true)}
+                  >
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white text-lg shadow-lg">
                           ✏️
@@ -1967,7 +1967,7 @@ export default function AppShell() {
                           <div className="text-xs text-gray-500">Update your details</div>
                         </div>
                       </div>
-                    </Button>
+                  </Button>
                   </div>
                 </div>
               </div>
@@ -1985,7 +1985,7 @@ export default function AppShell() {
                       </div>
                       <h4 className="text-xl font-bold text-gray-900">Change Password</h4>
                     </div>
-                    <ChangePasswordForm onClose={() => setShowChangePassword(false)} />
+                  <ChangePasswordForm onClose={() => setShowChangePassword(false)} />
                   </div>
                 </div>
               </div>
@@ -2001,7 +2001,7 @@ export default function AppShell() {
                       </div>
                       <h4 className="text-xl font-bold text-gray-900">Edit Profile</h4>
                     </div>
-                    <EditProfileForm user={user} onUpdated={setUser} onClose={() => setShowEditProfile(false)} />
+                  <EditProfileForm user={user} onUpdated={setUser} onClose={() => setShowEditProfile(false)} />
                   </div>
                 </div>
               </div>
@@ -2026,7 +2026,7 @@ export default function AppShell() {
                           <div className="space-y-2">
                             <div className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                               {user.monthlyTokens.toLocaleString()}
-                            </div>
+                    </div>
                             <div className="text-sm text-gray-600 font-medium">Tokens used this month</div>
                           </div>
                           <div className="relative">
@@ -2070,7 +2070,7 @@ export default function AppShell() {
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-full bg-purple-500 animate-pulse"></div>
                   <h3 className="text-lg font-bold text-gray-800">Chat Statistics</h3>
-                </div>
+                    </div>
                 
                 <div className="relative">
                   <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-600 rounded-3xl blur-lg opacity-20"></div>
@@ -2100,17 +2100,17 @@ export default function AppShell() {
                           </div>
                         </div>
                         <div className="text-3xl font-bold text-teal-600 mb-1">
-                          {Object.values(compareConversations).reduce((total, conv) => total + conv.length, 0)}
-                        </div>
+                        {Object.values(compareConversations).reduce((total, conv) => total + conv.length, 0)}
+                      </div>
                         <div className="text-sm text-gray-600 font-medium">Compare Chat</div>
                         <div className="text-xs text-gray-500 mt-1">Model comparisons</div>
-                      </div>
+                    </div>
                       
                       <div className="text-center group">
                         <div className="relative mb-4">
                           <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-600 flex items-center justify-center text-white text-2xl shadow-xl mx-auto group-hover:scale-110 transition-transform duration-300">
                             🤖
-                          </div>
+                    </div>
                           <div className="absolute -top-1 -right-1 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center shadow-lg">
                             <div className="w-2 h-2 bg-white rounded-full"></div>
                           </div>
@@ -2121,9 +2121,9 @@ export default function AppShell() {
                       </div>
                     </div>
                   </div>
+                  </div>
                 </div>
               </div>
-            </div>
             </div>
           </div>
         </div>
@@ -2180,60 +2180,60 @@ export default function AppShell() {
                   {/* Chat Header */}
                   <div className="bg-gradient-to-r from-purple-500 to-pink-600 p-6">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
                           <span className="text-2xl">💬</span>
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-3">
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-3">
                             <h2 className="text-xl font-bold text-white">
-                              {generationType === 'image' 
-                                ? IMAGE_MODELS.find(x => x.id === selectedImageModel)?.label || selectedImageModel
-                                : generationType === 'audio'
-                                ? AUDIO_VOICES.find(x => x.id === selectedAudioVoice)?.label || selectedAudioVoice
-                                : ALL_MODELS.find(x => x.id === activeModel)?.label || activeModel
-                              }
+                        {generationType === 'image' 
+                          ? IMAGE_MODELS.find(x => x.id === selectedImageModel)?.label || selectedImageModel
+                          : generationType === 'audio'
+                          ? AUDIO_VOICES.find(x => x.id === selectedAudioVoice)?.label || selectedAudioVoice
+                          : ALL_MODELS.find(x => x.id === activeModel)?.label || activeModel
+                        }
                             </h2>
-                            {((generationType === 'text' && streamingModels.has(activeModel)) || 
-                              (generationType === 'image' && isSending) || 
-                              (generationType === 'audio' && isSending)) && (
+                      {((generationType === 'text' && streamingModels.has(activeModel)) || 
+                        (generationType === 'image' && isSending) || 
+                        (generationType === 'audio' && isSending)) && (
                               <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 border border-white/30">
                                 <div className="h-2 w-2 rounded-full bg-white animate-pulse" />
                                 <span className="text-xs text-white font-medium">
-                                  {generationType === 'image' ? 'Generating...' : generationType === 'audio' ? 'Generating...' : 'Typing...'}
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                          <p className="text-purple-100 text-sm">AI Assistant</p>
+                            {generationType === 'image' ? 'Generating...' : generationType === 'audio' ? 'Generating...' : 'Typing...'}
+                          </span>
                         </div>
-                      </div>
+                      )}
+                    </div>
+                          <p className="text-purple-100 text-sm">AI Assistant</p>
+                  </div>
+                </div>
                       <div className="relative">
                         <div className="absolute inset-0 bg-gradient-to-r from-gray-500 to-gray-600 rounded-xl blur-sm opacity-75"></div>
-                        <Button 
-                          onClick={() => clearChat()}
+                <Button 
+                  onClick={() => clearChat()}
                           className="relative bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-lg transform hover:scale-105 transition-all duration-300"
-                        >
-                          🗑️ Clear
-                        </Button>
+                >
+                  🗑️ Clear
+                </Button>
                       </div>
                     </div>
                   </div>
                   {/* Chat Content */}
                   <div className="p-6 min-h-[400px]">
-                    <div 
-                      ref={listRef} 
+                <div 
+                  ref={listRef} 
                       className="space-y-6 overflow-y-auto h-full overscroll-contain touch-pan-y scrollbar-thin scrollbar-thumb-purple-200 scrollbar-track-transparent"
-                    >
-                      {singleVisibleMessages.length === 0 ? (
+                >
+                  {singleVisibleMessages.length === 0 ? (
                         <div className="flex items-center justify-center h-full text-center py-12">
-                          <div className="space-y-6">
+                      <div className="space-y-6">
                             <div className="relative">
                               <div className="w-20 h-20 bg-gradient-to-r from-purple-100 to-pink-100 rounded-3xl flex items-center justify-center mx-auto shadow-xl">
                                 <span className="text-3xl">💬</span>
-                              </div>
+                        </div>
                               <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-600 rounded-3xl blur-lg opacity-20"></div>
-                            </div>
+                        </div>
                             <div className="space-y-3">
                               <h3 className="text-2xl font-bold text-gray-800">Start a conversation</h3>
                               <p className="text-gray-600 max-w-lg mx-auto">
@@ -2244,22 +2244,241 @@ export default function AppShell() {
                               <div className="w-3 h-3 rounded-full bg-purple-500"></div>
                               <div className="w-3 h-3 rounded-full bg-pink-500"></div>
                               <div className="w-3 h-3 rounded-full bg-rose-500"></div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      {singleVisibleMessages.map((msg, idx) => (
+                        <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                              <div className={`max-w-[85%] relative ${
+                            msg.role === 'user' 
+                                  ? 'bg-gradient-to-br from-purple-500 to-pink-600 text-white shadow-xl rounded-3xl px-6 py-4' 
+                                  : 'bg-gradient-to-br from-gray-50 to-white border border-gray-200 text-gray-900 shadow-lg rounded-3xl px-6 py-4'
+                          }`}>
+                            <div className="text-sm leading-relaxed whitespace-pre-wrap">
+                              {msg.text}
+                              {msg.isStreaming && (
+                                    <span className="inline-block w-2 h-4 bg-purple-500 ml-1 animate-pulse" />
+                              )}
+                              {msg.text.includes('Error: Failed to get response') && (
+                                <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                                  <div className="flex items-center gap-2 text-red-600">
+                                    <span className="text-sm">⚠️</span>
+                                    <span className="text-sm font-medium">Connection issue - please try again</span>
+                                  </div>
+                                </div>
+                              )}
+                              {msg.type === 'image' && msg.content && (
+                                <div className="mt-3">
+                                  <img 
+                                    src={msg.content} 
+                                    alt="Generated image" 
+                                    className="max-w-full h-auto rounded-lg shadow-sm border border-slate-200"
+                                    onError={(e) => {
+                                      console.error('Image failed to load:', msg.content);
+                                      e.currentTarget.style.display = 'none';
+                                      // Show fallback message
+                                      const fallback = document.createElement('div');
+                                      fallback.className = 'p-4 bg-slate-100 rounded-lg border border-slate-200 text-sm text-slate-600';
+                                      fallback.innerHTML = `
+                                        <p>Image failed to load. Try opening the link directly:</p>
+                                        <a href="${msg.content}" target="_blank" rel="noopener noreferrer" class="text-mint-600 hover:text-mint-700 underline">
+                                          ${msg.content}
+                                        </a>
+                                      `;
+                                      e.currentTarget.parentNode?.appendChild(fallback);
+                                    }}
+                                    onLoad={() => {
+                                      console.log('Image loaded successfully:', msg.content);
+                                    }}
+                                  />
+                                  <div className="mt-2 text-xs text-slate-500">
+                                    <a href={msg.content} target="_blank" rel="noopener noreferrer" className="text-mint-600 hover:text-mint-700">
+                                      Open in new tab
+                                    </a>
+                                  </div>
+                                </div>
+                              )}
+                              {msg.type === 'audio' && msg.content && (
+                                <div className="mt-3">
+                                  <audio 
+                                    controls 
+                                    className="w-full max-w-md"
+                                    src={msg.content}
+                                  >
+                                    Your browser does not support the audio element.
+                                  </audio>
+                                </div>
+                              )}
+                            </div>
+                            {msg.role === 'assistant' && (
+                                  <div className="flex items-center justify-between mt-3">
+                                <div className="flex items-center gap-2">
+                                  <div className="text-xs text-slate-500 opacity-70">
+                                    {msg.model}
+                                  </div>
+                                  {msg.tokens && (
+                                        <div className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-lg">
+                                      {msg.tokens} tokens
+                                    </div>
+                                  )}
+                                </div>
+                                {msg.isStreaming && (
+                                  <div className="flex items-center gap-1">
+                                        <div className="h-1.5 w-1.5 rounded-full bg-purple-500 animate-pulse" />
+                                        <span className="text-xs text-purple-600 font-medium">Streaming</span>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                      {streamingModels.has(activeModel) && singleChatConversation.length > 0 && generationType === 'text' && (
+                        <div className="flex justify-start">
+                              <div className="max-w-[85%] rounded-3xl px-6 py-4 bg-gradient-to-br from-gray-50 to-white border border-gray-200 text-gray-900 shadow-lg">
+                            <div className="flex items-center gap-3">
+                              <div className="flex space-x-1">
+                                    <div className="h-2 w-2 rounded-full bg-purple-500 animate-bounce" style={{ animationDelay: '0ms' }} />
+                                    <div className="h-2 w-2 rounded-full bg-purple-500 animate-bounce" style={{ animationDelay: '150ms' }} />
+                                    <div className="h-2 w-2 rounded-full bg-purple-500 animate-bounce" style={{ animationDelay: '300ms' }} />
+                              </div>
+                              <span className="text-sm text-gray-600 font-medium">AI is thinking...</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : mode === 'smart' ? (
+          <SmartAnswer
+            onSendPrompt={sendPrompt}
+            isSending={isSending}
+            prompt={prompt}
+            setPrompt={setPrompt}
+            messages={smartChatConversation}
+            onSmartSend={handleSmartSend}
+            onClearChat={() => clearChat()}
+          />
+        ) : mode === 'tools' ? (
+          <ToolsPage />
+        ) : mode === 'community' ? (
+          <CommunityArena />
+        ) : mode === 'editor' ? (
+          <CodeEditor />
+        ) : (
+          <div className="h-full overflow-y-auto bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+            <div className="max-w-7xl mx-auto p-4">
+              {/* Hero Header */}
+              <div className="relative overflow-hidden mb-4">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-indigo-600/10 to-purple-600/10"></div>
+                <div className="relative text-center py-6">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm border border-white/20 shadow-lg mb-3">
+                    <div className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 animate-pulse"></div>
+                    <span className="text-xs font-semibold text-gray-700">AI Model Comparison</span>
+                  </div>
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-2">
+                    Compare AI Models
+                  </h1>
+                  <p className="text-sm text-gray-600 max-w-xl mx-auto">
+                    Compare responses from multiple AI models side-by-side to find the best answer for your needs!
+                  </p>
+                </div>
+              </div>
+
+              {/* Models Grid */}
+              <div className={`grid gap-6 ${
+            visibleModels.length === 1 ? 'grid-cols-1' :
+            visibleModels.length === 2 ? 'grid-cols-1 lg:grid-cols-2' :
+            visibleModels.length === 3 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' :
+            visibleModels.length === 4 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4' :
+            'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'
+          }`}>
+                {visibleModels.map((m, index) => (
+                  <div key={m} className="relative group" style={{ animationDelay: `${index * 100}ms` }}>
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-3xl blur-lg opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
+                    <div className="relative bg-white/90 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl overflow-hidden group-hover:shadow-3xl transition-all duration-500 group-hover:scale-[1.02]">
+                      {/* Model Header */}
+                      <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-6">
+                        <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
+                              <span className="text-2xl">🤖</span>
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-3">
+                                <h3 className="text-xl font-bold text-white">
+                            {ALL_MODELS.find(x => x.id === m)?.label || m}
+                                </h3>
+                          {streamingModels.has(m) && (
+                                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 border border-white/30">
+                                    <div className="h-2 w-2 rounded-full bg-white animate-pulse" />
+                                    <span className="text-xs text-white font-medium">Typing...</span>
+                            </div>
+                          )}
+                        </div>
+                              <p className="text-blue-100 text-sm">AI Assistant</p>
+                      </div>
+                    </div>
+                          <div className="relative">
+                            <div className="absolute inset-0 bg-gradient-to-r from-gray-500 to-gray-600 rounded-xl blur-sm opacity-75"></div>
+                    <Button 
+                      onClick={() => clearChat(m)}
+                              className="relative bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-lg transform hover:scale-105 transition-all duration-300"
+                    >
+                      🗑️ Clear
+                    </Button>
+                          </div>
+                        </div>
+                      </div>
+                      {/* Chat Content */}
+                      <div className="p-4 min-h-[350px]">
+                    <div 
+                      ref={(el) => { compareListRefs.current[m] = el; }}
+                          className="space-y-4 overflow-y-auto h-full overscroll-contain touch-pan-y scrollbar-thin scrollbar-thumb-blue-200 scrollbar-track-transparent"
+                    >
+                      {(compareConversations[m] || []).length === 0 ? (
+                            <div className="flex items-center justify-center h-full text-center py-10">
+                              <div className="space-y-4">
+                                <div className="relative">
+                                  <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-3xl flex items-center justify-center mx-auto shadow-xl">
+                                    <span className="text-2xl">🤖</span>
+                                  </div>
+                                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-3xl blur-lg opacity-20"></div>
+                            </div>
+                            <div className="space-y-2">
+                                  <h3 className="text-xl font-bold text-gray-800">Start a conversation</h3>
+                                  <p className="text-gray-600 max-w-sm mx-auto text-sm">
+                                    Type your message below to begin chatting with this AI model. Compare responses across different models!
+                                  </p>
+                            </div>
+                                <div className="flex items-center justify-center gap-2">
+                                  <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                                  <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
+                                  <div className="w-2 h-2 rounded-full bg-purple-500"></div>
                             </div>
                           </div>
                         </div>
                       ) : (
                         <>
-                          {singleVisibleMessages.map((msg, idx) => (
+                          {(compareConversations[m] || []).map((msg, idx) => (
                             <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                              <div className={`max-w-[85%] relative ${
+                                  <div className={`max-w-[85%] relative ${
                                 msg.role === 'user' 
-                                  ? 'bg-gradient-to-br from-purple-500 to-pink-600 text-white shadow-xl rounded-3xl px-6 py-4' 
-                                  : 'bg-gradient-to-br from-gray-50 to-white border border-gray-200 text-gray-900 shadow-lg rounded-3xl px-6 py-4'
+                                      ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-xl rounded-3xl px-6 py-4' 
+                                      : 'bg-gradient-to-br from-gray-50 to-white border border-gray-200 text-gray-900 shadow-lg rounded-3xl px-6 py-4'
                               }`}>
                                 <div className="text-sm leading-relaxed whitespace-pre-wrap">
                                   {msg.text}
                                   {msg.isStreaming && (
-                                    <span className="inline-block w-2 h-4 bg-purple-500 ml-1 animate-pulse" />
+                                        <span className="inline-block w-2 h-4 bg-blue-500 ml-1 animate-pulse" />
                                   )}
                                   {msg.text.includes('Error: Failed to get response') && (
                                     <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -2313,21 +2532,21 @@ export default function AppShell() {
                                   )}
                                 </div>
                                 {msg.role === 'assistant' && (
-                                  <div className="flex items-center justify-between mt-3">
+                                      <div className="flex items-center justify-between mt-3">
                                     <div className="flex items-center gap-2">
                                       <div className="text-xs text-slate-500 opacity-70">
                                         {msg.model}
                                       </div>
                                       {msg.tokens && (
-                                        <div className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-lg">
+                                            <div className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-lg">
                                           {msg.tokens} tokens
                                         </div>
                                       )}
                                     </div>
                                     {msg.isStreaming && (
                                       <div className="flex items-center gap-1">
-                                        <div className="h-1.5 w-1.5 rounded-full bg-purple-500 animate-pulse" />
-                                        <span className="text-xs text-purple-600 font-medium">Streaming</span>
+                                            <div className="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse" />
+                                            <span className="text-xs text-blue-600 font-medium">Streaming</span>
                                       </div>
                                     )}
                                   </div>
@@ -2335,16 +2554,16 @@ export default function AppShell() {
                               </div>
                             </div>
                           ))}
-                          {streamingModels.has(activeModel) && singleChatConversation.length > 0 && generationType === 'text' && (
+                          {streamingModels.has(m) && (compareConversations[m] || []).length > 0 && (
                             <div className="flex justify-start">
-                              <div className="max-w-[85%] rounded-3xl px-6 py-4 bg-gradient-to-br from-gray-50 to-white border border-gray-200 text-gray-900 shadow-lg">
-                                <div className="flex items-center gap-3">
+                                  <div className="max-w-[85%] rounded-3xl px-6 py-4 bg-gradient-to-br from-gray-50 to-white border border-gray-200 text-gray-900 shadow-lg">
+                                    <div className="flex items-center gap-3">
                                   <div className="flex space-x-1">
-                                    <div className="h-2 w-2 rounded-full bg-purple-500 animate-bounce" style={{ animationDelay: '0ms' }} />
-                                    <div className="h-2 w-2 rounded-full bg-purple-500 animate-bounce" style={{ animationDelay: '150ms' }} />
-                                    <div className="h-2 w-2 rounded-full bg-purple-500 animate-bounce" style={{ animationDelay: '300ms' }} />
+                                        <div className="h-2 w-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: '0ms' }} />
+                                        <div className="h-2 w-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: '150ms' }} />
+                                        <div className="h-2 w-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: '300ms' }} />
                                   </div>
-                                  <span className="text-sm text-gray-600 font-medium">AI is thinking...</span>
+                                      <span className="text-sm text-gray-600 font-medium">AI is thinking...</span>
                                 </div>
                               </div>
                             </div>
@@ -2352,229 +2571,10 @@ export default function AppShell() {
                         </>
                       )}
                     </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : mode === 'smart' ? (
-          <SmartAnswer
-            onSendPrompt={sendPrompt}
-            isSending={isSending}
-            prompt={prompt}
-            setPrompt={setPrompt}
-            messages={smartChatConversation}
-            onSmartSend={handleSmartSend}
-            onClearChat={() => clearChat()}
-          />
-        ) : mode === 'arena' ? (
-          <AIArena />
-        ) : mode === 'tools' ? (
-          <ToolsPage />
-        ) : mode === 'community' ? (
-          <CommunityArena />
-        ) : (
-          <div className="h-full overflow-y-auto bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-            <div className="max-w-7xl mx-auto p-4">
-              {/* Hero Header */}
-              <div className="relative overflow-hidden mb-4">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-indigo-600/10 to-purple-600/10"></div>
-                <div className="relative text-center py-6">
-                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm border border-white/20 shadow-lg mb-3">
-                    <div className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 animate-pulse"></div>
-                    <span className="text-xs font-semibold text-gray-700">AI Model Comparison</span>
-                  </div>
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 bg-clip-text text-transparent mb-2">
-                    Compare AI Models
-                  </h1>
-                  <p className="text-sm text-gray-600 max-w-xl mx-auto">
-                    Compare responses from multiple AI models side-by-side to find the best answer for your needs!
-                  </p>
-                </div>
-              </div>
-
-              {/* Models Grid */}
-              <div className={`grid gap-6 ${
-                visibleModels.length === 1 ? 'grid-cols-1' :
-                visibleModels.length === 2 ? 'grid-cols-1 lg:grid-cols-2' :
-                visibleModels.length === 3 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' :
-                visibleModels.length === 4 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4' :
-                'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'
-              }`}>
-                {visibleModels.map((m, index) => (
-                  <div key={m} className="relative group" style={{ animationDelay: `${index * 100}ms` }}>
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-3xl blur-lg opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
-                    <div className="relative bg-white/90 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl overflow-hidden group-hover:shadow-3xl transition-all duration-500 group-hover:scale-[1.02]">
-                      {/* Model Header */}
-                      <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-6">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
-                              <span className="text-2xl">🤖</span>
-                            </div>
-                            <div>
-                              <div className="flex items-center gap-3">
-                                <h3 className="text-xl font-bold text-white">
-                                  {ALL_MODELS.find(x => x.id === m)?.label || m}
-                                </h3>
-                                {streamingModels.has(m) && (
-                                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 border border-white/30">
-                                    <div className="h-2 w-2 rounded-full bg-white animate-pulse" />
-                                    <span className="text-xs text-white font-medium">Typing...</span>
-                                  </div>
-                                )}
-                              </div>
-                              <p className="text-blue-100 text-sm">AI Assistant</p>
-                            </div>
-                          </div>
-                          <div className="relative">
-                            <div className="absolute inset-0 bg-gradient-to-r from-gray-500 to-gray-600 rounded-xl blur-sm opacity-75"></div>
-                            <Button 
-                              onClick={() => clearChat(m)}
-                              className="relative bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow-lg transform hover:scale-105 transition-all duration-300"
-                            >
-                              🗑️ Clear
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                      {/* Chat Content */}
-                      <div className="p-4 min-h-[350px]">
-                        <div 
-                          ref={(el) => { compareListRefs.current[m] = el; }}
-                          className="space-y-4 overflow-y-auto h-full overscroll-contain touch-pan-y scrollbar-thin scrollbar-thumb-blue-200 scrollbar-track-transparent"
-                        >
-                          {(compareConversations[m] || []).length === 0 ? (
-                            <div className="flex items-center justify-center h-full text-center py-10">
-                              <div className="space-y-4">
-                                <div className="relative">
-                                  <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-3xl flex items-center justify-center mx-auto shadow-xl">
-                                    <span className="text-2xl">🤖</span>
-                                  </div>
-                                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-3xl blur-lg opacity-20"></div>
-                                </div>
-                                <div className="space-y-2">
-                                  <h3 className="text-xl font-bold text-gray-800">Start a conversation</h3>
-                                  <p className="text-gray-600 max-w-sm mx-auto text-sm">
-                                    Type your message below to begin chatting with this AI model. Compare responses across different models!
-                                  </p>
-                                </div>
-                                <div className="flex items-center justify-center gap-2">
-                                  <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                                  <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
-                                  <div className="w-2 h-2 rounded-full bg-purple-500"></div>
-                                </div>
-                              </div>
-                            </div>
-                          ) : (
-                            <>
-                              {(compareConversations[m] || []).map((msg, idx) => (
-                                <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                  <div className={`max-w-[85%] relative ${
-                                    msg.role === 'user' 
-                                      ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-xl rounded-3xl px-6 py-4' 
-                                      : 'bg-gradient-to-br from-gray-50 to-white border border-gray-200 text-gray-900 shadow-lg rounded-3xl px-6 py-4'
-                                  }`}>
-                                    <div className="text-sm leading-relaxed whitespace-pre-wrap">
-                                      {msg.text}
-                                      {msg.isStreaming && (
-                                        <span className="inline-block w-2 h-4 bg-blue-500 ml-1 animate-pulse" />
-                                      )}
-                                      {msg.text.includes('Error: Failed to get response') && (
-                                        <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
-                                          <div className="flex items-center gap-2 text-red-600">
-                                            <span className="text-sm">⚠️</span>
-                                            <span className="text-sm font-medium">Connection issue - please try again</span>
-                                          </div>
-                                        </div>
-                                      )}
-                                      {msg.type === 'image' && msg.content && (
-                                        <div className="mt-3">
-                                          <img 
-                                            src={msg.content} 
-                                            alt="Generated image" 
-                                            className="max-w-full h-auto rounded-lg shadow-sm border border-slate-200"
-                                            onError={(e) => {
-                                              console.error('Image failed to load:', msg.content);
-                                              e.currentTarget.style.display = 'none';
-                                              // Show fallback message
-                                              const fallback = document.createElement('div');
-                                              fallback.className = 'p-4 bg-slate-100 rounded-lg border border-slate-200 text-sm text-slate-600';
-                                              fallback.innerHTML = `
-                                                <p>Image failed to load. Try opening the link directly:</p>
-                                                <a href="${msg.content}" target="_blank" rel="noopener noreferrer" class="text-mint-600 hover:text-mint-700 underline">
-                                                  ${msg.content}
-                                                </a>
-                                              `;
-                                              e.currentTarget.parentNode?.appendChild(fallback);
-                                            }}
-                                            onLoad={() => {
-                                              console.log('Image loaded successfully:', msg.content);
-                                            }}
-                                          />
-                                          <div className="mt-2 text-xs text-slate-500">
-                                            <a href={msg.content} target="_blank" rel="noopener noreferrer" className="text-mint-600 hover:text-mint-700">
-                                              Open in new tab
-                                            </a>
-                                          </div>
-                                        </div>
-                                      )}
-                                      {msg.type === 'audio' && msg.content && (
-                                        <div className="mt-3">
-                                          <audio 
-                                            controls 
-                                            className="w-full max-w-md"
-                                            src={msg.content}
-                                          >
-                                            Your browser does not support the audio element.
-                                          </audio>
-                                        </div>
-                                      )}
-                                    </div>
-                                    {msg.role === 'assistant' && (
-                                      <div className="flex items-center justify-between mt-3">
-                                        <div className="flex items-center gap-2">
-                                          <div className="text-xs text-slate-500 opacity-70">
-                                            {msg.model}
-                                          </div>
-                                          {msg.tokens && (
-                                            <div className="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-lg">
-                                              {msg.tokens} tokens
-                                            </div>
-                                          )}
-                                        </div>
-                                        {msg.isStreaming && (
-                                          <div className="flex items-center gap-1">
-                                            <div className="h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse" />
-                                            <span className="text-xs text-blue-600 font-medium">Streaming</span>
-                                          </div>
-                                        )}
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              ))}
-                              {streamingModels.has(m) && (compareConversations[m] || []).length > 0 && (
-                                <div className="flex justify-start">
-                                  <div className="max-w-[85%] rounded-3xl px-6 py-4 bg-gradient-to-br from-gray-50 to-white border border-gray-200 text-gray-900 shadow-lg">
-                                    <div className="flex items-center gap-3">
-                                      <div className="flex space-x-1">
-                                        <div className="h-2 w-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: '0ms' }} />
-                                        <div className="h-2 w-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: '150ms' }} />
-                                        <div className="h-2 w-2 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: '300ms' }} />
-                                      </div>
-                                      <span className="text-sm text-gray-600 font-medium">AI is thinking...</span>
-                                    </div>
-                                  </div>
-                                </div>
-                              )}
-                            </>
-                          )}
-                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+              </div>
+            ))}
               </div>
             </div>
           </div>
@@ -2583,7 +2583,7 @@ export default function AppShell() {
       </div>
 
       {/* Chat Input */}
-      {mode !== 'arena' && mode !== 'tools' && mode !== 'community' && (
+      {mode !== 'tools' && mode !== 'community' && mode !== 'editor' && (
       <div className="bg-white/95 backdrop-blur-sm border-t border-gray-200/50 flex-shrink-0">
         <div className="mx-auto max-w-7xl px-4 py-3">
           {/* Generation Type Selector - Only show in single mode */}
@@ -2869,8 +2869,8 @@ function ChatHistoryModal({ isOpen, onClose, savedChats, onLoadChat, onDeleteCha
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-          </div>
-          
+        </div>
+        
           {/* Search */}
           <div className="p-8 border-b border-white/20">
             <div className="relative">
@@ -2881,20 +2881,20 @@ function ChatHistoryModal({ isOpen, onClose, savedChats, onLoadChat, onDeleteCha
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </div>
-                <input
-                  type="text"
+          <input
+            type="text"
                   placeholder="Search your conversations..."
-                  value={searchQuery}
-                  onChange={handleSearch}
+            value={searchQuery}
+            onChange={handleSearch}
                   className="w-full pl-12 pr-4 py-4 rounded-2xl border border-white/20 bg-white/80 backdrop-blur-sm text-gray-900 placeholder-gray-500 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300 shadow-lg"
-                />
+          />
               </div>
             </div>
-          </div>
+        </div>
 
           {/* Content */}
           <div className="flex-1 overflow-y-auto p-8 min-h-0">
-            {savedChats.length === 0 ? (
+          {savedChats.length === 0 ? (
               <div className="text-center py-16">
                 <div className="relative mb-8">
                   <div className="w-24 h-24 rounded-3xl bg-gradient-to-r from-emerald-100 to-teal-100 flex items-center justify-center mx-auto shadow-xl">
@@ -2906,28 +2906,28 @@ function ChatHistoryModal({ isOpen, onClose, savedChats, onLoadChat, onDeleteCha
                 <p className="text-gray-600 text-lg max-w-md mx-auto">
                   Start a conversation and it will be automatically saved for you to revisit later.
                 </p>
-              </div>
-            ) : (
+            </div>
+          ) : (
               <div className="grid gap-6">
                 {savedChats.map((chat, index) => (
-                  <div
-                    key={chat.id}
+                <div
+                  key={chat.id}
                     className="group relative"
                     style={{ animationDelay: `${index * 100}ms` }}
-                  >
+                >
                     <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-3xl blur-lg opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
                     <div className="relative bg-white/90 backdrop-blur-xl rounded-3xl border border-white/20 p-6 shadow-xl hover:shadow-2xl transition-all duration-500 group-hover:scale-[1.02] cursor-pointer"
                          onClick={() => onLoadChat(chat.id)}>
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-3 mb-3">
                             <div className="w-10 h-10 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 flex items-center justify-center text-white text-lg shadow-lg">
                               {chat.mode === 'single' ? '💬' : chat.mode === 'smart' ? '🧠' : '⚖️'}
                             </div>
                             <div>
                               <h3 className="text-lg font-bold text-gray-900 truncate">
-                                {chat.title}
-                              </h3>
+                        {chat.title}
+                      </h3>
                               <div className="flex items-center gap-2 mt-1">
                                 <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
                                   {chat.mode === 'single' ? 'Single Chat' : chat.mode === 'smart' ? 'Smart Chat' : 'Compare Chat'}
@@ -2935,7 +2935,7 @@ function ChatHistoryModal({ isOpen, onClose, savedChats, onLoadChat, onDeleteCha
                                 <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold">
                                   {chat.generationType}
                                 </span>
-                              </div>
+                    </div>
                             </div>
                           </div>
                           
@@ -2952,10 +2952,10 @@ function ChatHistoryModal({ isOpen, onClose, savedChats, onLoadChat, onDeleteCha
                         </div>
                         
                         <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onDeleteChat(chat.id);
-                          }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDeleteChat(chat.id);
+                      }}
                           className="p-3 rounded-2xl bg-red-100 hover:bg-red-200 text-red-600 hover:text-red-700 transition-all duration-300 group-hover:scale-110"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2963,11 +2963,11 @@ function ChatHistoryModal({ isOpen, onClose, savedChats, onLoadChat, onDeleteCha
                           </svg>
                         </button>
                       </div>
-                    </div>
                   </div>
-                ))}
-              </div>
-            )}
+                </div>
+              ))}
+            </div>
+          )}
           </div>
         </div>
       </div>
